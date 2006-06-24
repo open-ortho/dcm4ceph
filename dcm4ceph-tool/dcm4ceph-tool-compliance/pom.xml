@@ -5,7 +5,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>dcm4ceph.tool.compliance</groupId>
+  <groupId>org.antoniomagni.dcm4ceph.tool.compliance</groupId>
   <artifactId>dcm4ceph-tool-compliance</artifactId>
   <name>Maven Quick Start Archetype</name>
   <version>1.0-SNAPSHOT</version>

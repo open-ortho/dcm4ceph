@@ -1,4 +1,4 @@
-package dcm4ceph.tool.compliance;
+package org.antoniomagni.dcm4ceph.tool.compliance;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
