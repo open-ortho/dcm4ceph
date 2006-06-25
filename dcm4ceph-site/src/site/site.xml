@@ -16,9 +16,8 @@
     </links>
 
     <menu name="dcm4ceph">
-      <item name="APT Format" href="format.html"/>
+      <item name="History" href="history.html"/>
       <item name="FAQ" href="faq.html"/>
-      <item name="Xdoc Example" href="xdoc.html"/>      
     </menu>
   </body>
 </project>
