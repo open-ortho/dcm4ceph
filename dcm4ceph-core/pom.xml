@@ -1,11 +1,11 @@
 <?xml version="1.0"?><project>
   <parent>
-    <artifactId>dcm4ceph-ui</artifactId>
+    <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
     <version>0.0.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.antoniomagni.dcm4ceph.core</groupId>
+  <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-core</artifactId>
   <name>Maven Quick Start Archetype</name>
   <version>1.0-SNAPSHOT</version>
