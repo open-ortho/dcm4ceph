@@ -24,6 +24,11 @@
 
 package org.antoniomagni.dcm4ceph.tool.ceph2dicomdir;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.dcm4che2.data.BasicDicomObject;
@@ -36,17 +41,19 @@ import org.dcm4che2.iod.composite.SpatialFiducials;
  */
 public class Ceph2DICOMDIR {
 
-    private Properties cfg;
-    
-    Ceph2DICOMDIR(){
-        try {
-            cfg.load(Ceph2DICOMDIR.class.getResourceAsStream("ceph2dcm_defaults.properties"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    private Properties cfg = new Properties();
 
+    Ceph2DICOMDIR() {
+        try {
+            cfg.load(Ceph2DICOMDIR.class
+                    .getResourceAsStream("ceph2dcm_defaults.properties"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            cfg.list(System.out);
+        }
     }
-    
+
     /**
      * @param args
      */
@@ -54,35 +61,50 @@ public class Ceph2DICOMDIR {
         // TODO set arguments
 
         Ceph2DICOMDIR c2d = new Ceph2DICOMDIR();
-        c2d.loadParameters();
+        
+        try {
+            c2d.loadConfiguration(new File(args[0]));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         c2d.checkParameters();
 
     }
 
-    private void loadParameters() {
-        // TODO load defaults from ceph2dcm_defaults.properties
-
-        // TODO overwrite defaults from properties passed from user argument
+    private void loadConfiguration(File cfgFile) throws IOException {
+        Properties tmp = new Properties(cfg);
+        InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
+        try {
+            tmp.load(in);
+        } finally {
+            in.close();
+        }
+        cfg = tmp;
+    }
+    
+    public void printConfiguration(){
+        cfg.list(System.out);
     }
 
     private boolean checkParameters() {
         // TODO check image files for existance and correct resolution.
-        
+
         // TODO check ceph parameters for validity
 
         return false;
     }
-    
-    private DXImage makeDXImageIOD(){
+
+    private DXImage makeDXImageIOD() {
         return new DXImage(new BasicDicomObject());
     }
-    
-    private SpatialFiducials makeFiducialIOD(){
+
+    private SpatialFiducials makeFiducialIOD() {
         // TODO create fiducial IOD with reference to the DX Image IOD
         return new SpatialFiducials();
     }
 
-    private void storeinDICOMDIR(){
+    private void storeinDICOMDIR() {
         // TODO take the cephalogramset and store it in dicomdir format.
     }
 }
