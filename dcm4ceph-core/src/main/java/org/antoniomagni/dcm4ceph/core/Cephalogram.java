@@ -24,12 +24,28 @@
 
 package org.antoniomagni.dcm4ceph.core;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Iterator;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.VR;
 import org.dcm4che2.iod.composite.DXImage;
 import org.dcm4che2.iod.module.macro.AnatomicRegionCode;
 import org.dcm4che2.iod.module.macro.Code;
+import org.dcm4che2.iod.module.macro.ImageSOPInstanceReference;
+import org.dcm4che2.iod.module.macro.ImageSOPInstanceReferenceAndPurpose;
 import org.dcm4che2.iod.module.macro.PatientOrientationCode;
+import org.dcm4che2.iod.module.macro.SOPInstanceReferenceAndPurpose;
 import org.dcm4che2.iod.module.macro.ViewCode;
 
 /**
@@ -38,15 +54,28 @@ import org.dcm4che2.iod.module.macro.ViewCode;
  */
 public class Cephalogram extends DXImage {
 
-    Cephalogram(DicomObject dcmobj){
+    private String instanceNumber, patientOrientation;
+
+    private File imageFile;
+
+    Cephalogram(DicomObject dcmobj) {
         super(dcmobj);
     }
-    
+
     Cephalogram() {
         super(new BasicDicomObject());
     }
 
     public void init() {
+        // Set the Series (DX and General) Module Attributes
+        getDXSeriesModule().setModality("DX");
+        getDXSeriesModule().setSeriesInstanceUID(makeSeriesInstanceUID());
+        getDXSeriesModule().setSeriesDateTime(new Date());
+        getDXSeriesModule().setPresentationIntentType("FOR PROCESSING");
+
+        // Set the Image Module attributes
+        getDXImageModule().setSamplesPerPixel(1);
+
         // Set Positioner type to CEPHALOSTAT
         getDXPositioningModule().setPositionerType("CEPHALOSTAT");
 
@@ -56,16 +85,9 @@ public class Cephalogram extends DXImage {
         getDXPositioningModule().setPatientOrientationCode(pxOrientation);
 
         // Set samples per pixel according to grayscale
-        getDXImageModule().setSamplesPerPixel(1);
 
         // Set Table Type (0018,113A) to "FIXED"
         getDXPositioningModule().setTableType("FIXED");
-
-        // Set the Series Modality
-        getDXSeriesModule().setModality("DX");
-
-        // Set Presentation Intent
-        getDXSeriesModule().setPresentationIntentType("FOR PROCESSING");
 
         // Set DX Abatomy Imaged Module
         // TODO verify that this image laterality is set correctly.
@@ -73,6 +95,76 @@ public class Cephalogram extends DXImage {
         AnatomicRegionCode anatomicCode = (AnatomicRegionCode) setCode(
                 new AnatomicRegionCode(), "T-D1100", "Head, NOS", "SNM3");
         getDXAnatomyImageModule().setAnatomicRegionCode(anatomicCode);
+    }
+
+    /**
+     * Instance Number of Image Module
+     * <p>
+     * This is a required field.
+     * 
+     * @return Returns the instanceNumber.
+     */
+    public String getInstanceNumber() {
+        return instanceNumber;
+    }
+
+    /**
+     * Instance Number of Image Module
+     * <p>
+     * This is a required field.
+     * 
+     * @param instanceNumber
+     *            The instanceNumber to set.
+     */
+    public void setInstanceNumber(String instanceNumber) {
+        this.instanceNumber = instanceNumber;
+    }
+
+    /**
+     * Orientation of patient with respect to detector.
+     * <p>
+     * This field is supposed to make the correct letters show up, which help
+     * orient the examiner understand how the patient is oriented when looking
+     * at an image
+     * 
+     * @return Returns the patientOrientation.
+     */
+    public String getPatientOrientation() {
+        return patientOrientation;
+    }
+
+    /**
+     * Orientation of patient with respect to detector.
+     * <p>
+     * This field is supposed to make the correct letters show up, which help
+     * orient the examiner understand how the patient is oriented when looking
+     * at an image
+     * 
+     * @param patientOrientation
+     *            The patientOrientation to set.
+     */
+    public void setPatientOrientation(String patientOrientation) {
+        this.patientOrientation = patientOrientation;
+    }
+
+    /**
+     * @param imageFile
+     *            The imageFile to set.
+     */
+    public void setImageFile(File imageFile) {
+        this.imageFile = imageFile;
+
+        try {
+            FileImageInputStream imageInput = new FileImageInputStream(
+                    imageFile);
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
     }
 
     public boolean validate() {
@@ -86,21 +178,17 @@ public class Cephalogram extends DXImage {
             return false;
 
         if (getDXImageModule().getRedPaletteColorLookupTableDescriptor() != null)
-            getDXImageModule().setRedPaletteColorLookupTableDescriptor(
-                    null);
+            getDXImageModule().setRedPaletteColorLookupTableDescriptor(null);
         if (getDXImageModule().getRedPaletteColorLookupTableData() != null)
             getDXImageModule().setRedPaletteColorLookupTableData(null);
 
-        if (getDXImageModule()
-                .getGreenPaletteColorLookupTableDescriptor() != null)
-            getDXImageModule().setGreenPaletteColorLookupTableDescriptor(
-                    null);
+        if (getDXImageModule().getGreenPaletteColorLookupTableDescriptor() != null)
+            getDXImageModule().setGreenPaletteColorLookupTableDescriptor(null);
         if (getDXImageModule().getGreenPaletteColorLookupTableData() != null)
             getDXImageModule().setGreenPaletteColorLookupTableData(null);
 
         if (getDXImageModule().getBluePaletteColorLookupTableDescriptor() != null)
-            getDXImageModule().setBluePaletteColorLookupTableDescriptor(
-                    null);
+            getDXImageModule().setBluePaletteColorLookupTableDescriptor(null);
         if (getDXImageModule().getBluePaletteColorLookupTableData() != null)
             getDXImageModule().setBluePaletteColorLookupTableData(null);
 
@@ -115,8 +203,8 @@ public class Cephalogram extends DXImage {
      */
     public void setMagnification(float mag) {
         mag /= 100;
-        getDXPositioningModule()
-                .setEstimatedRadiographicMagnificationFactor(mag);
+        getDXPositioningModule().setEstimatedRadiographicMagnificationFactor(
+                mag);
     }
 
     /**
@@ -217,6 +305,58 @@ public class Cephalogram extends DXImage {
 
     }
 
+    /**
+     * Reference other image of a lateral/pa ceph pair.
+     * 
+     * @param UID
+     *            The instance UID of a DX IOD image for processing.
+     */
+    public void setReferencedImage(String UID) {
+        ImageSOPInstanceReferenceAndPurpose[] imagesops = new ImageSOPInstanceReferenceAndPurpose[1];
+        imagesops[0] = new ImageSOPInstanceReferenceAndPurpose();
+
+        Code c = new Code();
+        c.setCodeMeaning("Other image of biplane pair");
+        c.setCodeValue("121314");
+        c.setCodingSchemeDesignator("DCM");
+
+        imagesops[0].setReferencedSOPClassUID("1.2.840.10008.5.1.4.1.1.1.1.1");
+        imagesops[0].setReferencedSOPInstanceUID(UID);
+        imagesops[0].setPurposeofReferenceCode(c);
+
+        getDXImageModule().setReferencedImages(imagesops);
+    }
+
+    public void setReferencedInstance(String UID) {
+        SOPInstanceReferenceAndPurpose[] fidsops = new SOPInstanceReferenceAndPurpose[1];
+        fidsops[0] = new SOPInstanceReferenceAndPurpose();
+
+        Code c = new Code();
+        c.setCodeMeaning("Fiducial mark");
+        c.setCodeValue("112171");
+        c.setCodingSchemeDesignator("DCM");
+        c.setCodingSchemeVersion("01");
+
+        fidsops[0].setReferencedSOPClassUID("1.2.840.10008.5.1.4.1.1.66.2");
+        fidsops[0].setReferencedSOPInstanceUID(UID);
+        fidsops[0].setPurposeofReferenceCode(c);
+
+        getDXImageModule().setReferencedInstances(fidsops);
+    }
+
+    private void setImageAttributes(FileImageInputStream fiis) throws IOException {
+        Iterator iter = ImageIO.getImageReaders(fiis);
+        if (!iter.hasNext()) {
+            throw new IOException("Failed to detect image format");
+        }
+        ImageReader reader = (ImageReader) iter.next();
+        reader.setInput(fiis);
+        getGeneralImageModule().setRows(reader.getHeight(0));
+        getGeneralImageModule().setColumns(reader.getWidth(0));
+        reader.dispose();
+        fiis.seek(0);
+    }
+
     private void setOrientation(float prim, float sec, ViewCode viewcode) {
         getDXPositioningModule().setPositonerPrimaryAngle(prim);
         getDXPositioningModule().setPositonerSecondaryAngle(sec);
@@ -230,5 +370,10 @@ public class Cephalogram extends DXImage {
         c.setCodingSchemeDesignator(desig);
         return c;
 
+    }
+
+    private String makeSeriesInstanceUID() {
+        // TODO
+        return null;
     }
 }
