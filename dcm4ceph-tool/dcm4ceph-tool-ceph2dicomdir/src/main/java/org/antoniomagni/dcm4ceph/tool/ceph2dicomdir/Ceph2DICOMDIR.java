@@ -31,9 +31,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.antoniomagni.dcm4ceph.core.SBFiducialSet;
 import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.iod.composite.DXImage;
 import org.dcm4che2.iod.composite.SpatialFiducials;
+import org.dcm4che2.iod.module.macro.ImageSOPInstanceReference;
 
 /**
  * @author afm
@@ -42,16 +45,11 @@ import org.dcm4che2.iod.composite.SpatialFiducials;
 public class Ceph2DICOMDIR {
 
     private Properties cfg = new Properties();
+    private final String defaultcfgfile = "defaultcfg.properties";
+    private final String defaultfidfile = "defaultfid.properties";
 
     Ceph2DICOMDIR() {
-        try {
-            cfg.load(Ceph2DICOMDIR.class
-                    .getResourceAsStream("ceph2dcm_defaults.properties"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            cfg.list(System.out);
-        }
+        cfg = makeProperties(defaultcfgfile);
     }
 
     /**
@@ -61,9 +59,13 @@ public class Ceph2DICOMDIR {
         // TODO set arguments
 
         Ceph2DICOMDIR c2d = new Ceph2DICOMDIR();
+
+        File lateralFile = new File(args[0]);
+        File paFile = new File(args[1]);
+        File fidFile = new File(args[2]);
         
         try {
-            c2d.loadConfiguration(new File(args[0]));
+            c2d.cfg = c2d.loadConfiguration(lateralFile);
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -72,7 +74,7 @@ public class Ceph2DICOMDIR {
 
     }
 
-    private void loadConfiguration(File cfgFile) throws IOException {
+    private Properties loadConfiguration(File cfgFile) throws IOException {
         Properties tmp = new Properties(cfg);
         InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
         try {
@@ -80,10 +82,10 @@ public class Ceph2DICOMDIR {
         } finally {
             in.close();
         }
-        cfg = tmp;
+        return tmp;
     }
-    
-    public void printConfiguration(){
+
+    public void printConfiguration() {
         cfg.list(System.out);
     }
 
@@ -95,16 +97,38 @@ public class Ceph2DICOMDIR {
         return false;
     }
 
-    private DXImage makeDXImageIOD() {
-        return new DXImage(new BasicDicomObject());
+    private DXImage makeDXImageIOD(Properties cephdata) {
+        DXImage dxImage = new DXImage(new BasicDicomObject());
+        
+        //dxImage.getPatientModule()
+        
+        return dxImage;
     }
 
-    private SpatialFiducials makeFiducialIOD() {
-        // TODO create fiducial IOD with reference to the DX Image IOD
-        return new SpatialFiducials();
+    private SpatialFiducials makeFiducialIOD(DicomObject dcmobj) {
+        // TODO create reference to the DX Image IOD
+        ImageSOPInstanceReference sop = new ImageSOPInstanceReference();
+
+        Properties fidprop = makeProperties(defaultfidfile);
+        
+        SBFiducialSet sbfs = new SBFiducialSet(sop, fidprop);
+
+        return sbfs.makeFiducialIOD(dcmobj);
     }
 
     private void storeinDICOMDIR() {
         // TODO take the cephalogramset and store it in dicomdir format.
     }
+
+    private Properties makeProperties(String filename) {
+        try {
+            Properties p = new Properties();
+            p.load(Ceph2DICOMDIR.class.getResourceAsStream(filename));
+            return p;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 }

@@ -7,9 +7,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-tool-ceph2dicomdir</artifactId>
-  <name>Maven Quick Start Archetype</name>
+  <name>CEPH2DICOMDIR Cretes dicom directories from cephalograms.</name>
   <version>1.0-SNAPSHOT</version>
-  <url>http://maven.apache.org</url>
+  <url>http://dcm4cepch.antoniomagni.org</url>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
