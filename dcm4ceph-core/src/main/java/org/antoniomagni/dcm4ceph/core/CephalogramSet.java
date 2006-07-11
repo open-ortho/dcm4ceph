@@ -24,6 +24,9 @@
 
 package org.antoniomagni.dcm4ceph.core;
 
+import java.io.File;
+
+
 /**
  * This class represents a set of lateral and frontal cephalograms.
  * <p>
@@ -33,5 +36,44 @@ package org.antoniomagni.dcm4ceph.core;
  *
  */
 public class CephalogramSet {
+    private Cephalogram lateral, pa;
 
+    /**
+     * @return Returns the lateral cephalogram.
+     */
+    public Cephalogram getLateral() {
+        return lateral;
+    }
+
+    /**
+     * @param lateral The lateral cephalogram to set.
+     */
+    public void setLateral(Cephalogram lateral) {
+        this.lateral = lateral;
+    }
+
+    /**
+     * @return Returns the pa cephalogram.
+     */
+    public Cephalogram getPa() {
+        return pa;
+    }
+
+    /**
+     * @param pa The pa cephalogram to set.
+     */
+    public void setPa(Cephalogram pa) {
+        this.pa = pa;
+    }
+    
+    /**
+     * Write out this cephalogram set to a directory.
+     * 
+     * @param rootdir
+     */
+    public void write(File rootdir){
+         //TODO
+    }
+    
+    
 }

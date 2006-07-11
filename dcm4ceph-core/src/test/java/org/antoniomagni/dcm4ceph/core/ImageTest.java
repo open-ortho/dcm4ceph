@@ -31,16 +31,22 @@ public class ImageTest {
             }
             ImageReader reader = (ImageReader) iter.next();
             reader.setInput(fiis);
-            String[] formats = reader.getImageMetadata(0).getMetadataFormatNames();
-            for (int i=0; i<formats.length; i++)
+            String[] formats = reader.getImageMetadata(0)
+                    .getMetadataFormatNames();
+            for (int i = 0; i < formats.length; i++)
                 System.out.println(formats[i]);
-            
-            Node node = reader.getImageMetadata(0).getAsTree(formats[1]);
-            //node.getChildNodes().
+
+            Node node = reader.getImageMetadata(0).getAsTree(formats[0]);
+            // Node node = reader.getImageMetadata(0).get
+            printChildNodeNames(node);
+            Node chroma = searchChildNode(node, "JPEGvariety");
+            printChildNodeNames(chroma);
+
+            printChildNodeNames(searchChildNode(chroma,"app0JFIF"));
             
             reader.dispose();
             fiis.seek(0);
-            
+
         } catch (FileNotFoundException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
@@ -51,5 +57,23 @@ public class ImageTest {
             e.printStackTrace();
         }
 
+    }
+
+    private static void printChildNodeNames(Node node) {
+        if (node != null) {
+            System.out.println("------ Node " + node.getNodeName()
+                    + " -----------");
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                System.out.println(node.getChildNodes().item(i).getLocalName());
+            }
+        }
+    }
+
+    private static Node searchChildNode(Node n, String name) {
+        for (int i = 0; i < n.getChildNodes().getLength(); i++) {
+            if (n.getChildNodes().item(i).getLocalName().equals(name))
+                return n.getChildNodes().item(i);
+        }
+        return null;
     }
 }

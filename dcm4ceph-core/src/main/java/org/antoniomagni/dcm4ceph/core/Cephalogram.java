@@ -56,6 +56,8 @@ public class Cephalogram extends DXImage {
 
     private String instanceNumber, patientOrientation;
 
+    private final int minimumAllowedDPI = 128;
+
     private File imageFile;
 
     Cephalogram(DicomObject dcmobj) {
@@ -167,14 +169,19 @@ public class Cephalogram extends DXImage {
 
     }
 
+    /**
+     * @return Returns the imageFile.
+     */
+    public File getImageFile() {
+        return imageFile;
+    }
+
     public boolean validate() {
-        if (getDXImageModule().getRows() < 1536)
-            return false;
-        if (getDXImageModule().getColumns() < 1024)
-            return false;
         if (getDXImageModule().getBitsAllocated() < 16)
             return false;
         if (getDXImageModule().getBitsStored() < 12)
+            return false;
+        if (!validatePixelSpacing())
             return false;
 
         if (getDXImageModule().getRedPaletteColorLookupTableDescriptor() != null)
@@ -193,6 +200,29 @@ public class Cephalogram extends DXImage {
             getDXImageModule().setBluePaletteColorLookupTableData(null);
 
         return true;
+    }
+
+    private boolean validatePixelSpacing() {
+        boolean invalid = false;
+        float[] pixelspacing = getDXDetectorModule().getPixelSpacing();
+        for (int i = 0; i < pixelspacing.length; i++) {
+            if (pixelspacing[i] > getMaximumPixelSpacing())
+                invalid = true;
+        }
+        return !invalid;
+
+    }
+
+    /**
+     * Get the maxmimum allowed resolution value.
+     * <p>
+     * This is a value in mm. Any values greater than this is not allowed, as it
+     * is considered to be a sufficient resolution for accurate measurments.
+     * 
+     * @return The resolution in distance between one pixel and the next.
+     */
+    public float getMaximumPixelSpacing() {
+        return (float) (1 / minimumAllowedDPI * 25.4);
     }
 
     /**
@@ -344,7 +374,8 @@ public class Cephalogram extends DXImage {
         getDXImageModule().setReferencedInstances(fidsops);
     }
 
-    private void setImageAttributes(FileImageInputStream fiis) throws IOException {
+    private void setImageAttributes(FileImageInputStream fiis)
+            throws IOException {
         Iterator iter = ImageIO.getImageReaders(fiis);
         if (!iter.hasNext()) {
             throw new IOException("Failed to detect image format");
