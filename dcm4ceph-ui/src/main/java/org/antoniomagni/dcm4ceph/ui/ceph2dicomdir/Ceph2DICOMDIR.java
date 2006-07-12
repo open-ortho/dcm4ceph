@@ -24,6 +24,8 @@
 
 package org.antoniomagni.dcm4ceph.ui.ceph2dicomdir;
 
+import java.util.Properties;
+
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.iod.composite.DXImage;
 import org.dcm4che2.iod.composite.SpatialFiducials;
@@ -34,6 +36,17 @@ import org.dcm4che2.iod.composite.SpatialFiducials;
  */
 public class Ceph2DICOMDIR {
 
+    private Properties cfg;
+    
+    Ceph2DICOMDIR(){
+        try {
+            cfg.load(Ceph2DICOMDIR.class.getResourceAsStream("ceph2dcm_defaults.properties"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+    
     /**
      * @param args
      */

@@ -2,14 +2,27 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
-  <artifactId>dcm4ceph-ui</artifactId>
+  <artifactId>dcm4ceph</artifactId>
   <version>0.0.1</version>
-  <description>DICOM for Cephalograms frontedn</description>
+  <description>DICOM for Cephalograms</description>
   <packaging>pom</packaging>
   <modules>
     <module>dcm4ceph-ui</module>
     <module>dcm4ceph-dist</module>
     <module>dcm4ceph-core</module>
     <module>dcm4ceph-tool</module>
+    <module>dcm4ceph-site</module>
   </modules>
+    <dependencies>
+      <dependency>
+      <groupId>dcm4che</groupId>
+      <artifactId>dcm4che-core</artifactId>
+      <version>2.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>dcm4che</groupId>
+      <artifactId>dcm4che-iod</artifactId>
+      <version>2.0.6</version>
+    </dependency>
+ </dependencies>
 </project>

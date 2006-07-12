@@ -28,11 +28,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 /**
+ * 
+ * A static class with file related utilities.
+ * 
  * @author afm
  * 
  */
 public class FileUtils {
-    
+
     public static File getDCMFile(File file) {
         try {
             return FileUtils.getFileNewExtension(file, "dcm");
@@ -51,8 +54,6 @@ public class FileUtils {
         }
     }
 
-
-    
     public static File getFileNewExtension(File file, String ext)
             throws FileNotFoundException {
         if (!file.canRead())
