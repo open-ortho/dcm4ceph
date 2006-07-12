@@ -1,6 +1,6 @@
 <?xml version="1.0"?><project>
   <parent>
-    <artifactId>dcm4ceph-ui</artifactId>
+    <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
     <version>0.0.1</version>
   </parent>
