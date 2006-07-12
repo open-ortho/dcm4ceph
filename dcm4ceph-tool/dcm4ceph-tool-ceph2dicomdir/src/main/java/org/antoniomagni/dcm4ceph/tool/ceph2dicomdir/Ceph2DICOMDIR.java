@@ -31,13 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.antoniomagni.dcm4ceph.core.SBFiducialSet;
-import org.dcm4che2.data.BasicDicomObject;
-import org.dcm4che2.data.DicomObject;
-import org.dcm4che2.iod.composite.DXImage;
-import org.dcm4che2.iod.composite.SpatialFiducials;
-import org.dcm4che2.iod.module.macro.ImageSOPInstanceReference;
-
 /**
  * @author afm
  * 
@@ -97,25 +90,6 @@ public class Ceph2DICOMDIR {
         return false;
     }
 
-    private DXImage makeDXImageIOD(Properties cephdata) {
-        DXImage dxImage = new DXImage(new BasicDicomObject());
-        
-        //dxImage.getPatientModule()
-        
-        return dxImage;
-    }
-
-    private SpatialFiducials makeFiducialIOD(DicomObject dcmobj) {
-        // TODO create reference to the DX Image IOD
-        ImageSOPInstanceReference sop = new ImageSOPInstanceReference();
-
-        Properties fidprop = makeProperties(defaultfidfile);
-        
-        SBFiducialSet sbfs = new SBFiducialSet(sop, fidprop);
-
-        return sbfs.makeFiducialIOD(dcmobj);
-    }
-
     private void storeinDICOMDIR() {
         // TODO take the cephalogramset and store it in dicomdir format.
     }
@@ -130,5 +104,5 @@ public class Ceph2DICOMDIR {
             return null;
         }
     }
-
+    
 }
