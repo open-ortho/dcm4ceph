@@ -24,15 +24,20 @@
 
 package org.antoniomagni.dcm4ceph.core;
 
-import java.util.Arrays;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
 
-import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.UID;
 import org.dcm4che2.iod.composite.SpatialFiducials;
 import org.dcm4che2.iod.module.macro.ImageSOPInstanceReference;
 import org.dcm4che2.iod.module.spatial.Fiducial;
 import org.dcm4che2.iod.module.spatial.FiducialSet;
+import org.dcm4che2.util.UIDUtils;
 
 /**
  * Reprsents a set of SB corner fiducials in DICOM format.
@@ -46,7 +51,7 @@ import org.dcm4che2.iod.module.spatial.FiducialSet;
  * @author afm
  * 
  */
-public class SBFiducialSet {
+public class SBFiducialSet extends SpatialFiducials {
 
     /**
      * The Fiducial Identifier (0070,03100) and and Fiducial Description
@@ -89,26 +94,80 @@ public class SBFiducialSet {
      * A fiducial set makes no sense if it is not related to an image, which can
      * provide information on Pixel Spacing, necessary to put real distance to
      * fiducial coordinates. Therefore it is necessary to create a FiducialSet
-     * with an {@link ImageSOPInstanceReference}.
+     * with a reference to another image's SOP instance UID.
+     * <p>
+     * Use {@link #loadProperties(Properties)} to set configurations from
+     * properties file. Must load Properties before running {@link #init()},
+     * otherwise the fiducial coordinates will not be set.
      * 
      * @param sop
+     *            The SOP Instance UID of the referring image.
      */
-    public SBFiducialSet(ImageSOPInstanceReference sop) {
-        this.refimage = sop;
+    public SBFiducialSet(String uid) {
+        super(new BasicDicomObject());
+        this.refimage = makeSOP(uid);
     }
 
-    public SBFiducialSet(ImageSOPInstanceReference sop, Properties fidprop) {
-        setD12(new Float(fidprop.getProperty("d12")).floatValue());
-        setD23(new Float(fidprop.getProperty("d23")).floatValue());
-        setD34(new Float(fidprop.getProperty("d34")).floatValue());
-        setD14(new Float(fidprop.getProperty("d14")).floatValue());
-        setD13(new Float(fidprop.getProperty("d13")).floatValue());
-        setD24(new Float(fidprop.getProperty("d24")).floatValue());
+    public SBFiducialSet(String uid, Properties fidprop) {
+        this(uid);
+        loadProperties(fidprop);
+    }
+
+    public SBFiducialSet(String uid, File propertiesFile) {
+        this(uid);
+
+        Properties p = new Properties();
+        try {
+            p.load(new FileInputStream(propertiesFile));
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        loadProperties(p);
+
+    }
+
+    /**
+     * Initialize the Spatial Fiducial IOD to the dicomobject.
+     * <p>
+     * This method assumes that the fiducial distances have already been parsed
+     * with {@link #loadProperties(Properties)}.
+     * 
+     * @param dcmobj
+     * @return
+     */
+    public void init() {
+        super.init();
+
+        getSopCommonModule().setSOPClassUID(UID.SpatialFiducialsStorage);
+        getSopCommonModule().setSOPInstanceUID(UIDUtils.createUID());
 
         computeCoordinates();
 
-        setLabel(fidprop.getProperty("label"));
-        setDescriptor(fidprop.getProperty("descriptor"));
+        FiducialSet[] fidsetArray = new FiducialSet[1];
+        Fiducial[] fidsArray = new Fiducial[4];
+        ImageSOPInstanceReference[] sops = new ImageSOPInstanceReference[1];
+        sops[0] = refimage;
+
+        fidsArray[0] = setFiducial(TL, sops[0]);
+        fidsArray[1] = setFiducial(TR, sops[0]);
+        fidsArray[2] = setFiducial(BR, sops[0]);
+        fidsArray[3] = setFiducial(BL, sops[0]);
+
+        getSpatialFiducialsSeriesModule().setModality("FID");
+        getSpatialFiducialsModule().setContentDateTime(new Date());
+        getSpatialFiducialsModule().setInstanceNumber(getNumber());
+        getSpatialFiducialsModule().setContentLabel(getLabel());
+        getSpatialFiducialsModule().setContentDescription(getDescriptor());
+
+        fidsetArray[0] = new FiducialSet(dcmobj);
+        fidsetArray[0].setFiducials(fidsArray);
+        fidsetArray[0].setReferencedImages(sops);
+        getSpatialFiducialsModule().setFiducialSets(fidsetArray);
+
     }
 
     /**
@@ -339,6 +398,18 @@ public class SBFiducialSet {
         this.descriptor = descriptor;
     }
 
+    public void setSeriesUID(String uid) {
+        getGeneralSeriesModule().setSeriesInstanceUID(uid);
+    }
+
+    public void setStudyUID(String uid) {
+        getGeneralStudyModule().setStudyID(uid);
+    }
+
+    public String getUID() {
+        return getSopCommonModule().getSOPInstanceUID();
+    }
+
     // TODO find a way to compute the coordinates from the distances.
     public void setDistance12(float d) {
 
@@ -346,6 +417,14 @@ public class SBFiducialSet {
 
     }
 
+    /**
+     * Computes 4 coordinates from 6 distances.
+     * <p>
+     * The distances are read from the getters. This method needs to be
+     * execeuted after the distances from the properties file have been parse
+     * with {@link #loadProperties(Properties)}.
+     * 
+     */
     private void computeCoordinates() {
         double f2x, f2y, f1x, f1y;
         // Set the f4 on the origin
@@ -409,40 +488,6 @@ public class SBFiducialSet {
         return Math.sqrt(Math.pow((Ax - Bx), 2) + Math.pow((Ay - By), 2));
     }
 
-    /**
-     * Add a Spatial Fiducial IOD to the dicomobject.
-     * 
-     * @param dcmobj
-     * @return
-     */
-    public SpatialFiducials makeFiducialIOD(DicomObject dcmobj) {
-
-        SpatialFiducials fidiod = new SpatialFiducials(dcmobj);
-        FiducialSet[] fidsetArray = new FiducialSet[1];
-        Fiducial[] fidsArray = new Fiducial[4];
-        ImageSOPInstanceReference[] sops = new ImageSOPInstanceReference[1];
-        sops[0] = refimage;
-
-        fidsArray[0] = setFiducial(TL, sops[0]);
-        fidsArray[1] = setFiducial(TR, sops[0]);
-        fidsArray[2] = setFiducial(BR, sops[0]);
-        fidsArray[3] = setFiducial(BL, sops[0]);
-
-        fidiod.getSpatialFiducialsSeriesModule().setModality("FID");
-        fidiod.getSpatialFiducialsModule().setContentDateTime(new Date());
-        fidiod.getSpatialFiducialsModule().setInstanceNumber(getNumber());
-        fidiod.getSpatialFiducialsModule().setContentLabel(getLabel());
-        fidiod.getSpatialFiducialsModule().setContentDescription(
-                getDescriptor());
-
-        fidsetArray[0] = new FiducialSet(dcmobj);
-        fidsetArray[0].setFiducials(fidsArray);
-        fidsetArray[0].setReferencedImages(sops);
-        fidiod.getSpatialFiducialsModule().setFiducialSets(fidsetArray);
-
-        return fidiod;
-    }
-
     private Fiducial setFiducial(String[] type, ImageSOPInstanceReference sop) {
         Fiducial f;
         if (type[0].equals("TL"))
@@ -460,6 +505,28 @@ public class SBFiducialSet {
         f.setFiducialDescription(type[1]);
 
         return f;
+    }
+
+    private ImageSOPInstanceReference makeSOP(String uid) {
+        ImageSOPInstanceReference sop = new ImageSOPInstanceReference();
+        sop.setReferencedSOPClassUID(UID.DigitalXRayImageStorageForProcessing);
+        sop.setReferencedSOPInstanceUID(uid);
+        return sop;
+    }
+
+    public void loadProperties(Properties fidprop) {
+        setD12(new Float(fidprop.getProperty("d12")).floatValue());
+        setD23(new Float(fidprop.getProperty("d23")).floatValue());
+        setD34(new Float(fidprop.getProperty("d34")).floatValue());
+        setD14(new Float(fidprop.getProperty("d14")).floatValue());
+        setD13(new Float(fidprop.getProperty("d13")).floatValue());
+        setD24(new Float(fidprop.getProperty("d24")).floatValue());
+
+        computeCoordinates();
+
+        setLabel(fidprop.getProperty("label"));
+        setDescriptor(fidprop.getProperty("descriptor"));
+
     }
 
 }

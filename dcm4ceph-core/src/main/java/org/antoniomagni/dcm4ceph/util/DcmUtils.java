@@ -22,58 +22,21 @@
  * 
  */
 
-package org.antoniomagni.dcm4ceph.core;
+package org.antoniomagni.dcm4ceph.util;
 
-import java.io.File;
-
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.VR;
+import org.dcm4che2.util.UIDUtils;
 
 /**
- * This class represents a set of lateral and frontal cephalograms.
- * <p>
- * Both cephalograms are included in the same Series.
- * 
  * @author afm
- *
+ * 
  */
-public class CephalogramSet {
-    private Cephalogram lateral, pa;
-
-    /**
-     * @return Returns the lateral cephalogram.
-     */
-    public Cephalogram getLateral() {
-        return lateral;
+public class DcmUtils {
+    public static void ensureUID(DicomObject attrs, int tag) {
+        if (!attrs.containsValue(tag)) {
+            attrs.putString(tag, VR.UI, UIDUtils.createUID());
+        }
     }
 
-    /**
-     * @param lateral The lateral cephalogram to set.
-     */
-    public void setLateral(Cephalogram lateral) {
-        this.lateral = lateral;
-    }
-
-    /**
-     * @return Returns the pa cephalogram.
-     */
-    public Cephalogram getPa() {
-        return pa;
-    }
-
-    /**
-     * @param pa The pa cephalogram to set.
-     */
-    public void setPa(Cephalogram pa) {
-        this.pa = pa;
-    }
-    
-    /**
-     * Write out this cephalogram set to a directory.
-     * 
-     * @param rootdir
-     */
-    public void write(File rootdir){
-         //TODO
-    }
-    
-    
 }

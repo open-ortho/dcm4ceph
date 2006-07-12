@@ -24,41 +24,84 @@
 
 package org.antoniomagni.dcm4ceph.core;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
-import javax.imageio.stream.ImageInputStream;
 
+import org.antoniomagni.dcm4ceph.util.DcmUtils;
+import org.antoniomagni.dcm4ceph.util.FileUtils;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
+import org.dcm4che2.data.UID;
 import org.dcm4che2.data.VR;
+import org.dcm4che2.io.DicomOutputStream;
 import org.dcm4che2.iod.composite.DXImage;
 import org.dcm4che2.iod.module.macro.AnatomicRegionCode;
 import org.dcm4che2.iod.module.macro.Code;
-import org.dcm4che2.iod.module.macro.ImageSOPInstanceReference;
 import org.dcm4che2.iod.module.macro.ImageSOPInstanceReferenceAndPurpose;
 import org.dcm4che2.iod.module.macro.PatientOrientationCode;
 import org.dcm4che2.iod.module.macro.SOPInstanceReferenceAndPurpose;
 import org.dcm4che2.iod.module.macro.ViewCode;
+import org.dcm4che2.util.UIDUtils;
 
 /**
+ * This class represents a digital cephalogram.
+ * 
  * @author afm
  * 
  */
 public class Cephalogram extends DXImage {
 
-    private String instanceNumber, patientOrientation;
+    private String patientOrientation;
 
     private final int minimumAllowedDPI = 128;
 
     private File imageFile;
+    
+    private final String charset = "ISO_IR 100";
+
+    private String transferSyntax = UID.JPEGBaseline1;
+
+    // private SBFiducialSet sbFiducialSet;
+
+    Cephalogram(String SeriesInstanceUID) {
+        this();
+        this.setSeriesUID(SeriesInstanceUID);
+    }
+
+    public Cephalogram(Properties cephprops) {
+        this();
+        setFromProperties(cephprops);
+    }
+
+    public Cephalogram(File cephFile) {
+        this();
+        Properties p = new Properties();
+        try {
+            p.load(new FileInputStream(FileUtils.getPropertiesFile(cephFile)));
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        setFromProperties(p);
+
+    }
 
     Cephalogram(DicomObject dcmobj) {
         super(dcmobj);
@@ -66,12 +109,20 @@ public class Cephalogram extends DXImage {
 
     Cephalogram() {
         super(new BasicDicomObject());
+        init();
     }
 
     public void init() {
+        super.init();
+        // Set SOP stuff.
+        getSopCommonModule().setSOPClassUID(
+                UID.DigitalXRayImageStorageForProcessing);
+        getSopCommonModule().setSOPInstanceUID(UIDUtils.createUID());
+        
         // Set the Series (DX and General) Module Attributes
         getDXSeriesModule().setModality("DX");
-        getDXSeriesModule().setSeriesInstanceUID(makeSeriesInstanceUID());
+        if (this.getSeriesUID() == null)
+            this.setSeriesUID(makeInstanceUID());
         getDXSeriesModule().setSeriesDateTime(new Date());
         getDXSeriesModule().setPresentationIntentType("FOR PROCESSING");
 
@@ -97,29 +148,113 @@ public class Cephalogram extends DXImage {
         AnatomicRegionCode anatomicCode = (AnatomicRegionCode) setCode(
                 new AnatomicRegionCode(), "T-D1100", "Head, NOS", "SNM3");
         getDXAnatomyImageModule().setAnatomicRegionCode(anatomicCode);
+
+    }
+
+    private void setFromProperties(Properties cephprops) {
+        getPatientModule()
+                .setPatientsName(cephprops.getProperty("patientName"));
+        getPatientModule().setPatientID(cephprops.getProperty("patientID"));
+        try {
+            getPatientModule().setPatientsBirthDate(
+                    DateFormat.getDateInstance().parse(
+                            cephprops.getProperty("patientDOB")));
+
+            getGeneralStudyModule().setStudyDateTime(
+                    DateFormat.getDateInstance().parse(
+                            cephprops.getProperty("studyDate") + " "
+                                    + cephprops.getProperty("studyTime")));
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        getPatientModule().setPatientsSex(cephprops.getProperty("patientSex"));
+
+        getGeneralStudyModule().setReferringPhysiciansName(
+                cephprops.getProperty("referringPhysician"));
+        getGeneralStudyModule().setStudyID(cephprops.getProperty("studyID"));
+        getGeneralStudyModule().setAccessionNumber(
+                cephprops.getProperty("accessionNumber"));
+
+        getDXSeriesModule().setSeriesNumber(
+                cephprops.getProperty("seriesNumber"));
+
+        getDXImageModule().setInstanceNumber(
+                cephprops.getProperty("instanceNumber"));
+
+        String[] patientOrientation = {
+                cephprops.getProperty("patientOrientationRow"),
+                cephprops.getProperty("patientOrientationColumn") };
+        getDXImageModule().setPatientOrientation(patientOrientation);
+
+        getDXSeriesModule().setSeriesNumber(
+                cephprops.getProperty("seriesNumber"));
+
+        setDistances(Float.parseFloat(cephprops.getProperty("sid")), Float
+                .parseFloat(cephprops.getProperty("sod")));
+        setMagnification(Float.parseFloat(cephprops.getProperty("mag")));
+
     }
 
     /**
-     * Instance Number of Image Module
+     * Instance Number of Study Module
      * <p>
-     * This is a required field.
+     * This is the identifier that uniquely identifies the Study this
+     * cephalogram is part of.
      * 
      * @return Returns the instanceNumber.
      */
-    public String getInstanceNumber() {
-        return instanceNumber;
+    public String getStudyUID() {
+        return getGeneralStudyModule().getStudyInstanceUID();
     }
 
     /**
-     * Instance Number of Image Module
+     * Instance Number of Study Module
      * <p>
-     * This is a required field.
+     * This is the identifier that uniquely identifies the Study this
+     * cephalogram is part of.
      * 
      * @param instanceNumber
      *            The instanceNumber to set.
      */
-    public void setInstanceNumber(String instanceNumber) {
-        this.instanceNumber = instanceNumber;
+    public void setStudyUID(String uid) {
+        getGeneralStudyModule().setStudyInstanceUID(uid);
+    }
+
+    /**
+     * Instance Number of Series Module
+     * <p>
+     * This is the identifier that uniquely identifies the Series this
+     * cephalogram is part of.
+     * 
+     * @return Returns the instanceNumber.
+     */
+    public String getSeriesUID() {
+        return getDXSeriesModule().getSeriesInstanceUID();
+    }
+
+    /**
+     * Instance Number of Image Module
+     * <p>
+     * This is the identifier that uniquely identifies the Series this
+     * cephalogram is part of.
+     * 
+     * @param instanceNumber
+     *            The instanceNumber to set.
+     */
+    public void setSeriesUID(String instanceNumber) {
+        getDXSeriesModule().setSeriesInstanceUID(instanceNumber);
+    }
+
+    /**
+     * Get the unique identifier.
+     * <p>
+     * This is the identifier that uniquely identifies this image.
+     * 
+     * @return
+     */
+    public String getUID() {
+        return getSopCommonModule().getSOPInstanceUID();
     }
 
     /**
@@ -341,37 +476,111 @@ public class Cephalogram extends DXImage {
      * @param UID
      *            The instance UID of a DX IOD image for processing.
      */
-    public void setReferencedImage(String UID) {
+    public void setReferencedImage(String uid) {
         ImageSOPInstanceReferenceAndPurpose[] imagesops = new ImageSOPInstanceReferenceAndPurpose[1];
         imagesops[0] = new ImageSOPInstanceReferenceAndPurpose();
 
+        imagesops[0]
+                .setReferencedSOPClassUID(UID.DigitalXRayImageStorageForProcessing);
+        imagesops[0].setReferencedSOPInstanceUID(uid);
+        imagesops[0].setPurposeofReferenceCode(makeReferencedImageCode());
+
+        getDXImageModule().setReferencedImages(imagesops);
+    }
+
+    /**
+     * Write this Cephalogram in a DICOM .dcm file.
+     * 
+     */
+    public void writeDCM() {
+        File dcmFile = FileUtils.getDCMFile(this.imageFile);
+        
+        int bufferSize = 8192;
+        
+        DicomObject dcmobj = this.getDicomObject();
+        DcmUtils.ensureUID(dcmobj, Tag.StudyInstanceUID);
+        DcmUtils.ensureUID(dcmobj, Tag.SeriesInstanceUID);
+        DcmUtils.ensureUID(dcmobj, Tag.SOPInstanceUID);
+        
+        dcmobj.putString(Tag.SpecificCharacterSet, VR.CS, charset);
+        dcmobj.initFileMetaInformation(transferSyntax );
+
+        try {
+            FileOutputStream fos = new FileOutputStream(dcmFile);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            DicomOutputStream dos = new DicomOutputStream(bos);
+
+            FileImageInputStream instream = new FileImageInputStream(imageFile);
+
+            dos.writeDicomFile(dcmobj);
+            dos.writeHeader(Tag.PixelData, VR.OB, -1);
+            dos.writeHeader(Tag.Item, null, 0);
+            int jpgLen = (int) instream.length();
+            dos.writeHeader(Tag.Item, null, (jpgLen+1)&~1);
+            byte[] b = new byte[bufferSize];
+            int r;
+            while ((r = instream.read(b)) > 0) {
+                dos.write(b, 0, r);
+            }
+            if ((jpgLen&1) != 0) {
+                dos.write(0);
+            }
+            dos.writeHeader(Tag.SequenceDelimitationItem, null, 0);
+            dos.close();
+            instream.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Makes the code for referencing other cephalogram image.
+     * <p>
+     * This method generates the appopriate code that should be used when
+     * referencing the other cephalogram of a lateral/pa pair.
+     * 
+     * @return
+     */
+    private Code makeReferencedImageCode() {
         Code c = new Code();
         c.setCodeMeaning("Other image of biplane pair");
         c.setCodeValue("121314");
         c.setCodingSchemeDesignator("DCM");
 
-        imagesops[0].setReferencedSOPClassUID("1.2.840.10008.5.1.4.1.1.1.1.1");
-        imagesops[0].setReferencedSOPInstanceUID(UID);
-        imagesops[0].setPurposeofReferenceCode(c);
-
-        getDXImageModule().setReferencedImages(imagesops);
+        return c;
     }
 
-    public void setReferencedInstance(String UID) {
+    public void setReferencedFiducialSet(String uid) {
         SOPInstanceReferenceAndPurpose[] fidsops = new SOPInstanceReferenceAndPurpose[1];
         fidsops[0] = new SOPInstanceReferenceAndPurpose();
 
+        fidsops[0].setReferencedSOPClassUID(UID.SpatialFiducialsStorage);
+        fidsops[0].setReferencedSOPInstanceUID(uid);
+        fidsops[0].setPurposeofReferenceCode(makeReferencedFiducialCode());
+
+        getDXImageModule().setReferencedInstances(fidsops);
+    }
+
+    /**
+     * @return Returns the sbFiducialSet.
+     */
+    public String getReferencedFiducialSet() {
+        return getDXImageModule().getReferencedInstances()[0]
+                .getReferencedSOPInstanceUID();
+    }
+
+    private Code makeReferencedFiducialCode() {
         Code c = new Code();
         c.setCodeMeaning("Fiducial mark");
         c.setCodeValue("112171");
         c.setCodingSchemeDesignator("DCM");
         c.setCodingSchemeVersion("01");
 
-        fidsops[0].setReferencedSOPClassUID("1.2.840.10008.5.1.4.1.1.66.2");
-        fidsops[0].setReferencedSOPInstanceUID(UID);
-        fidsops[0].setPurposeofReferenceCode(c);
-
-        getDXImageModule().setReferencedInstances(fidsops);
+        return c;
     }
 
     private void setImageAttributes(FileImageInputStream fiis)
@@ -403,8 +612,8 @@ public class Cephalogram extends DXImage {
 
     }
 
-    private String makeSeriesInstanceUID() {
-        // TODO
-        return null;
+    private String makeInstanceUID() {
+        return UIDUtils.createUID();
     }
+
 }
