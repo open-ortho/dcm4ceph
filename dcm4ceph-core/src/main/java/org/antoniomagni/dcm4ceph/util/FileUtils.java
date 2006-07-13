@@ -63,7 +63,8 @@ public class FileUtils {
 
         if (!ext.startsWith("."))
             ext = "." + ext;
-        String[] filename = file.getName().split(".");
+        String[] filename = file.getName().split("\\.");
+        
         File newfile = new File(file.getParent() + File.separator + filename[0]
                 + ext);
 

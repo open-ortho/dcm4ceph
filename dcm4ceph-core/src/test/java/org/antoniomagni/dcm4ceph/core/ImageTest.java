@@ -1,7 +1,6 @@
 package org.antoniomagni.dcm4ceph.core;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
@@ -16,7 +15,7 @@ public class ImageTest {
     public static void main(String[] args) {
         try {
             File infile = new File(
-                    "/Users/afm/Desktop/Dissertacao_en/Other/Bolton_sampledata/B1893L12.jpg");
+                    "c:/Documents and Settings/afm/Desktop/Bolton_sampledata/B1893L12.jpg");
             FileImageInputStream fiis;
             fiis = new FileImageInputStream(infile);
 

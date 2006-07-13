@@ -27,7 +27,6 @@ package org.antoniomagni.dcm4ceph.core;
 import java.io.File;
 import java.util.Properties;
 
-import org.antoniomagni.dcm4ceph.util.FileUtils;
 import org.dcm4che2.util.UIDUtils;
 
 /**
