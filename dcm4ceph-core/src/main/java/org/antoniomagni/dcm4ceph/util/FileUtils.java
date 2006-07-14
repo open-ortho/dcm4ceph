@@ -36,44 +36,39 @@ import java.io.FileNotFoundException;
  */
 public class FileUtils {
 
-    public static File getDCMFile(File file) {
-        try {
-            return FileUtils.getFileNewExtension(file, "dcm");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	public static File getDCMFile(File file) {
+		try {
+			return FileUtils.getFileNewExtension(file, "dcm");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    public static File getPropertiesFile(File file) {
-        try {
-            return FileUtils.getFileNewExtension(file, "properties");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
+	public static File getPropertiesFile(File file) {
+		try {
+			return FileUtils.getFileNewExtension(file, "properties");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-    public static File getFileNewExtension(File file, String ext)
-            throws FileNotFoundException {
-        if (!file.canRead())
-            throw new FileNotFoundException(
-                    "Can't read input Cephalogram Image file: "
-                            + file.getAbsolutePath());
+	public static File getFileNewExtension(File file, String ext)
+			throws FileNotFoundException {
+		if (!file.canRead())
+			throw new FileNotFoundException(
+					"Can't read input Cephalogram Image file: "
+							+ file.getAbsolutePath());
 
-        if (!ext.startsWith("."))
-            ext = "." + ext;
-        String[] filename = file.getName().split("\\.");
-        
-        File newfile = new File(file.getParent() + File.separator + filename[0]
-                + ext);
+		if (!ext.startsWith("."))
+			ext = "." + ext;
+		String[] filename = file.getName().split("\\.");
 
-        if (newfile.canRead())
-            return newfile;
-        else
-            throw new FileNotFoundException(
-                    "Can't read input Cephalogram Properties file: "
-                            + newfile.getAbsolutePath());
-    }
+		File newfile = new File(file.getParent() + File.separator + filename[0]
+				+ ext);
+
+		return newfile;
+	}
 
 }

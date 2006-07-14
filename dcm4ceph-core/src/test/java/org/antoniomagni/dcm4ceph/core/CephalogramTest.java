@@ -23,10 +23,12 @@ public class CephalogramTest {
 
 		File cephfile = new File(args[0]);
 		
-//		Cephalogram ceph = new Cephalogram(cephfile);
+		Cephalogram ceph = new Cephalogram(cephfile);
+		ceph.setStudyDescription("DCM4CEPH TEST");
+		ceph.setPosteroAnterior();
 		
-//		File dcmfile = ceph.writeDCM();
-		printDicomElements(FileUtils.getDCMFile(cephfile));
+		File dcmfile = ceph.writeDCM();
+//		printDicomElements(FileUtils.getDCMFile(cephfile));
 	}
 	
 	public static void printDicomElements(File dcmfile){

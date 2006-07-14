@@ -43,6 +43,7 @@ import javax.imageio.stream.FileImageInputStream;
 import org.antoniomagni.dcm4ceph.util.DcmUtils;
 import org.antoniomagni.dcm4ceph.util.FileUtils;
 import org.dcm4che2.data.BasicDicomObject;
+import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.UID;
@@ -59,8 +60,11 @@ import org.dcm4che2.iod.validation.ValidationContext;
 import org.dcm4che2.iod.validation.ValidationResult;
 import org.dcm4che2.iod.value.ImageLaterality;
 import org.dcm4che2.iod.value.Modality;
+import org.dcm4che2.iod.value.PhotometricInterpretation;
+import org.dcm4che2.iod.value.PixelRepresentation;
 import org.dcm4che2.iod.value.PositionerType;
 import org.dcm4che2.iod.value.PresentationIntentType;
+import org.dcm4che2.iod.value.TableType;
 import org.dcm4che2.util.UIDUtils;
 
 /**
@@ -70,10 +74,13 @@ import org.dcm4che2.util.UIDUtils;
  * 
  */
 public class Cephalogram extends DXImage {
+	private final double mm2inch = 25.4; // 25.4 mm to an inch.
 
 	private String patientOrientation;
 
 	private final int minimumAllowedDPI = 128;
+
+	private int DPI = 300;
 
 	private File imageFile;
 
@@ -81,32 +88,35 @@ public class Cephalogram extends DXImage {
 
 	private String transferSyntax = UID.JPEGBaseline1;
 
+	private Properties instanceProperties;
+
 	// private SBFiducialSet sbFiducialSet;
 
-	Cephalogram(String SeriesInstanceUID) {
-		this();
-		this.setSeriesUID(SeriesInstanceUID);
-	}
-
-	public Cephalogram(Properties cephprops) {
-		this();
-		setFromProperties(cephprops);
-	}
-
+	// Cephalogram(String SeriesInstanceUID) {
+	// this();
+	// this.setSeriesUID(SeriesInstanceUID);
+	// }
+	//
+	// public Cephalogram(Properties cephprops) {
+	// this();
+	// setFromProperties(cephprops);
+	// }
+	//
 	public Cephalogram(File cephFile) {
-		this();
+		super(new BasicDicomObject());
+		instanceProperties = new Properties();
 		setImageFile(cephFile);
-		Properties p = new Properties();
+
+		init();
+
 		try {
-			p.load(new FileInputStream(FileUtils.getPropertiesFile(cephFile)));
+			instanceProperties.load(new FileInputStream(FileUtils
+					.getPropertiesFile(cephFile)));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		setFromProperties(p);
 
 	}
 
@@ -114,11 +124,17 @@ public class Cephalogram extends DXImage {
 		super(dcmobj);
 	}
 
-	Cephalogram() {
-		super(new BasicDicomObject());
-		init();
-	}
-
+	// Cephalogram() {
+	// super(new BasicDicomObject());
+	// init();
+	// }
+	//
+	/**
+	 * Perform initialization procedure.
+	 * <p>
+	 * This method sets the various attributes to values which are independent
+	 * the instance of the class.
+	 */
 	public void init() {
 		super.init();
 		// Set SOP stuff.
@@ -133,7 +149,7 @@ public class Cephalogram extends DXImage {
 		getDXSeriesModule().setSeriesDateTime(new Date());
 		getDXSeriesModule().setPresentationIntentType(
 				PresentationIntentType.PROCESSING);
-
+		
 		// Set the Image Module attributes
 		getDXImageModule().setSamplesPerPixel(1);
 
@@ -148,7 +164,7 @@ public class Cephalogram extends DXImage {
 		// Set samples per pixel according to grayscale
 
 		// Set Table Type (0018,113A) to "FIXED"
-		getDXPositioningModule().setTableType("FIXED");
+		getDXPositioningModule().setTableType(TableType.FIXED);
 
 		// Set DX Abatomy Imaged Module
 		// TODO verify that this image laterality is set correctly.
@@ -157,11 +173,57 @@ public class Cephalogram extends DXImage {
 				new AnatomicRegionCode(), "T-D1100", "Head, NOS", "SNM3");
 		getDXAnatomyImageModule().setAnatomicRegionCode(anatomicCode);
 
-		//TODO set Image Pixel Values!!!
+	}
+
+	/**
+	 * Prepare object for writing.
+	 * <p>
+	 * This method sets the various dicom attributes that are specific to this
+	 * Cephalogram instance.
+	 * 
+	 * @see #setFromProperties(Properties)
+	 * @see #setImageAttributes(FileImageInputStream)
+	 * 
+	 */
+	private void prepare() {
+		setFromProperties(instanceProperties);
+		try {
+			setImageAttributes(new FileImageInputStream(imageFile));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	public void validate(ValidationContext ctx, ValidationResult result) {
 		super.validate(ctx, result);
+		BasicDicomObject testobj = new BasicDicomObject();
+
+		if (getDXImageModule().getBitsAllocated() < 16)
+			result.logInvalidValue(Tag.BitsAllocated, dcmobj);
+		if (getDXImageModule().getBitsStored() < 12)
+			result.logInvalidValue(Tag.BitsStored, dcmobj);
+		if (!validatePixelSpacing())
+			result.logInvalidValue(Tag.PixelSpacing, dcmobj);
+
+		if (getDXImageModule().getRedPaletteColorLookupTableDescriptor() != null)
+			getDXImageModule().setRedPaletteColorLookupTableDescriptor(null);
+		if (getDXImageModule().getRedPaletteColorLookupTableData() != null)
+			getDXImageModule().setRedPaletteColorLookupTableData(null);
+
+		if (getDXImageModule().getGreenPaletteColorLookupTableDescriptor() != null)
+			getDXImageModule().setGreenPaletteColorLookupTableDescriptor(null);
+		if (getDXImageModule().getGreenPaletteColorLookupTableData() != null)
+			getDXImageModule().setGreenPaletteColorLookupTableData(null);
+
+		if (getDXImageModule().getBluePaletteColorLookupTableDescriptor() != null)
+			getDXImageModule().setBluePaletteColorLookupTableDescriptor(null);
+		if (getDXImageModule().getBluePaletteColorLookupTableData() != null)
+			getDXImageModule().setBluePaletteColorLookupTableData(null);
 
 	}
 
@@ -214,6 +276,10 @@ public class Cephalogram extends DXImage {
 
 		setMagnification(cephprops.getProperty("mag"));
 
+		if (cephprops.getProperty("cephalogramType").equals("PA"))
+			setPosteroAnterior();
+		if (cephprops.getProperty("cephalogramType").equals("L"))
+			setLeftLateral();
 	}
 
 	/**
@@ -239,6 +305,24 @@ public class Cephalogram extends DXImage {
 	 */
 	public void setStudyUID(String uid) {
 		getGeneralStudyModule().setStudyInstanceUID(uid);
+	}
+
+	/**
+	 * Descritpion of the study.
+	 * 
+	 * @return Returns the description.
+	 */
+	public String getStudyDescription() {
+		return getGeneralStudyModule().getStudyDescription();
+	}
+
+	/**
+	 * Descritpion of the study.
+	 * 
+	 * @param instanceNumber
+	 */
+	public void setStudyDescription(String Description) {
+		getGeneralStudyModule().setStudyDescription(Description);
 	}
 
 	/**
@@ -305,23 +389,33 @@ public class Cephalogram extends DXImage {
 	}
 
 	/**
+	 * Gets the image resolution.
+	 * <p>
+	 * Default resolution is 300 dpi.
+	 * 
+	 * @return The DPI of the image.
+	 */
+	public int getResolution() {
+		return DPI;
+	}
+
+	/**
+	 * Sets the image resolution in DPI.
+	 * <p>
+	 * Default resolution is 300 dpi.
+	 * 
+	 * @param dpi
+	 */
+	public void setResolution(int dpi) {
+		DPI = dpi;
+	}
+
+	/**
 	 * @param imageFile
 	 *            The imageFile to set.
 	 */
-	public void setImageFile(File imageFile) {
-		this.imageFile = imageFile;
-
-		try {
-			FileImageInputStream imageInput = new FileImageInputStream(
-					imageFile);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+	public void setImageFile(File file) {
+		this.imageFile = file;
 	}
 
 	/**
@@ -329,32 +423,6 @@ public class Cephalogram extends DXImage {
 	 */
 	public File getImageFile() {
 		return imageFile;
-	}
-
-	public boolean validate() {
-		if (getDXImageModule().getBitsAllocated() < 16)
-			return false;
-		if (getDXImageModule().getBitsStored() < 12)
-			return false;
-		if (!validatePixelSpacing())
-			return false;
-
-		if (getDXImageModule().getRedPaletteColorLookupTableDescriptor() != null)
-			getDXImageModule().setRedPaletteColorLookupTableDescriptor(null);
-		if (getDXImageModule().getRedPaletteColorLookupTableData() != null)
-			getDXImageModule().setRedPaletteColorLookupTableData(null);
-
-		if (getDXImageModule().getGreenPaletteColorLookupTableDescriptor() != null)
-			getDXImageModule().setGreenPaletteColorLookupTableDescriptor(null);
-		if (getDXImageModule().getGreenPaletteColorLookupTableData() != null)
-			getDXImageModule().setGreenPaletteColorLookupTableData(null);
-
-		if (getDXImageModule().getBluePaletteColorLookupTableDescriptor() != null)
-			getDXImageModule().setBluePaletteColorLookupTableDescriptor(null);
-		if (getDXImageModule().getBluePaletteColorLookupTableData() != null)
-			getDXImageModule().setBluePaletteColorLookupTableData(null);
-
-		return true;
 	}
 
 	private boolean validatePixelSpacing() {
@@ -377,7 +445,7 @@ public class Cephalogram extends DXImage {
 	 * @return The resolution in distance between one pixel and the next.
 	 */
 	public float getMaximumPixelSpacing() {
-		return (float) (1 / minimumAllowedDPI * 25.4);
+		return (float) (1.0 / minimumAllowedDPI * mm2inch);
 	}
 
 	/**
@@ -391,12 +459,12 @@ public class Cephalogram extends DXImage {
 			setMagnification(Float.parseFloat(mags));
 	}
 
-	private void setMagnification(float mag){
+	private void setMagnification(float mag) {
 		mag /= 100;
-		getDXPositioningModule()
-				.setEstimatedRadiographicMagnificationFactor(mag);
+		getDXPositioningModule().setEstimatedRadiographicMagnificationFactor(
+				mag);
 	}
-	
+
 	private void setDistances(float SID, float SOD) {
 		getDXPositioningModule().setDistanceSourcetoDetector(SID);
 		getDXPositioningModule().setDistanceSourcetoPatient(SOD);
@@ -416,11 +484,11 @@ public class Cephalogram extends DXImage {
 	 * @param SOD
 	 *            X-ray source to Patient distance in mm.
 	 */
-	public void setDistance(String SID, String SOD){
+	public void setDistance(String SID, String SOD) {
 		if (SID != null && SOD != null)
 			setDistances(Float.parseFloat(SID), Float.parseFloat(SOD));
 	}
-	
+
 	/**
 	 * A shortcut for standard postero-anterior cephalograms.
 	 * 
@@ -435,6 +503,8 @@ public class Cephalogram extends DXImage {
 	public void setPosteroAnterior() {
 		setOrientation(180, 0, (ViewCode) setCode(new ViewCode(), "R-10214",
 				"postero-anterior", "SNM3"));
+		getDXSeriesModule().setSeriesDescription("POSTERO-ANTERIOR CEPHALOGRAM");
+
 	}
 
 	/**
@@ -482,6 +552,8 @@ public class Cephalogram extends DXImage {
 	public void setLeftLateral() {
 		setOrientation(90, 0, (ViewCode) setCode(new ViewCode(), "R-10236",
 				"left lateral", "SNM3"));
+		getDXSeriesModule().setSeriesDescription("LATERAL CEPHALOGRAM");
+
 	}
 
 	/**
@@ -520,15 +592,16 @@ public class Cephalogram extends DXImage {
 
 	/**
 	 * Write this Cephalogram in a DICOM .dcm file.
+	 * <p>
+	 * Before writing, checks the validity of the object.
 	 * 
-	 * @return The {@link File} this object was written to.
+	 * @return The {@link File} this object was written to, or null if the
+	 *         object was not written because of its invalidiy
+	 * 
+	 * @see #validate(ValidationContext, ValidationResult)
 	 * 
 	 */
 	public File writeDCM() {
-		File dcmFile = getDCMFile();
-
-		int bufferSize = 8192;
-
 		DicomObject dcmobj = this.getDicomObject();
 		DcmUtils.ensureUID(dcmobj, Tag.StudyInstanceUID);
 		DcmUtils.ensureUID(dcmobj, Tag.SeriesInstanceUID);
@@ -537,10 +610,31 @@ public class Cephalogram extends DXImage {
 		dcmobj.putString(Tag.SpecificCharacterSet, VR.CS, charset);
 		dcmobj.initFileMetaInformation(transferSyntax);
 
+		// First prepare the dicom object.
+		prepare();
+
+		// Then verify it.
+		ValidationResult results = new ValidationResult();
+		validate(new ValidationContext(), results);
+
+		if (results.isValid())
+			return writeDCM(getDCMFile());
+		else {
+			System.err.println("Dicom object did not pass validity tests.");
+			System.err.println(results.getInvalidValues().toString());
+			return null;
+		}
+	}
+
+	private File writeDCM(File dcmFile) {
+		int bufferSize = 8192;
+
 		try {
 			FileOutputStream fos = new FileOutputStream(dcmFile);
 			BufferedOutputStream bos = new BufferedOutputStream(fos);
 			DicomOutputStream dos = new DicomOutputStream(bos);
+
+			System.out.println("Writing to file " + dcmFile.getCanonicalPath());
 
 			FileImageInputStream instream = new FileImageInputStream(imageFile);
 
@@ -628,10 +722,28 @@ public class Cephalogram extends DXImage {
 		}
 		ImageReader reader = (ImageReader) iter.next();
 		reader.setInput(fiis);
-		getGeneralImageModule().setRows(reader.getHeight(0));
-		getGeneralImageModule().setColumns(reader.getWidth(0));
+		getDXImageModule().setRows(reader.getHeight(0));
+		getDXImageModule().setColumns(reader.getWidth(0));
 		reader.dispose();
 		fiis.seek(0);
+
+		getDXImageModule().setSamplesPerPixel(1);
+		getDXImageModule().setPhotometricInterpretation(
+				PhotometricInterpretation.MONOCHROME2);
+
+		// TODO this should at least come from configuration file.
+		getDXImageModule().setBitsAllocated(16);
+		getDXImageModule().setBitsStored(16);
+		getDXImageModule().setHighBit(15);
+		getDXImageModule().setPixelRepresentation(PixelRepresentation.UNSIGNED);
+
+		float[] ps = new float[2];
+		ps[0] = (float) (1.0 / (float) getResolution() * mm2inch);
+		ps[1] = ps[0];
+		System.out.println("1 / " + getResolution() + " * " + mm2inch + " = "
+				+ ps[1]);
+		getDXDetectorModule().setPixelSpacing(ps);
+
 	}
 
 	private void setOrientation(float prim, float sec, ViewCode viewcode) {
