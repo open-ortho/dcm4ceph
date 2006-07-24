@@ -1,0 +1,17 @@
+
+
+** Compiling
+
+If you are not familiar with maven, these guidelines will get you
+started.
+
+1. Download and install maven (http://maven.apache.org) 2. run "mvn
+insall" in this directory of the source code. 3. run "mvn
+assembly:assembly" in dcm4ceph-dist directory
+
+You will find packages waiting for you in dcm4ceph-dist/target/
+
+** Running
+
+In bin/ you will find scripts to execute the classes in lib/. Just run
+them, and see what happens.

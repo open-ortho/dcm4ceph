@@ -23,6 +23,15 @@
       <fileMode>0755</fileMode>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>../</directory>
+      <includes>
+        <include>README</include>
+      </includes>
+      <lineEnding>unix</lineEnding>
+      <fileMode>0644</fileMode>
+      <outputDirectory>./</outputDirectory>
+    </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
