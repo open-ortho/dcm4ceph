@@ -31,78 +31,80 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.antoniomagni.dcm4ceph.core.BBCephalogramSet;
+
 /**
  * @author afm
  * 
  */
 public class Ceph2DICOMDIR {
 
-    private Properties cfg = new Properties();
-    private final String defaultcfgfile = "defaultcfg.properties";
-    private final String defaultfidfile = "defaultfid.properties";
+	private Properties cfg = new Properties();
 
-    Ceph2DICOMDIR() {
-        cfg = makeProperties(defaultcfgfile);
-    }
+	private final String defaultcfgfile = "defaultcfg.properties";
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO set arguments
+	private final String defaultfidfile = "defaultfid.properties";
 
-        Ceph2DICOMDIR c2d = new Ceph2DICOMDIR();
+	Ceph2DICOMDIR() {
+		cfg = makeProperties(defaultcfgfile);
+	}
 
-        File lateralFile = new File(args[0]);
-        File paFile = new File(args[1]);
-        File fidFile = new File(args[2]);
-        
-        try {
-            c2d.cfg = c2d.loadConfiguration(lateralFile);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        c2d.checkParameters();
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		// TODO set arguments
 
-    }
+		File cephfile1 = new File(args[0]);
+		File cephfile2 = new File(args[1]);
+		File fidfile = new File(args[2]);
 
-    private Properties loadConfiguration(File cfgFile) throws IOException {
-        Properties tmp = new Properties(cfg);
-        InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
-        try {
-            tmp.load(in);
-        } finally {
-            in.close();
-        }
-        return tmp;
-    }
+		BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
+				fidfile);
 
-    public void printConfiguration() {
-        cfg.list(System.out);
-    }
+		cephSet.makeDicomDir(new File(cephfile1.getParent() + File.separator
+				+ "BBcephset"));
 
-    private boolean checkParameters() {
-        // TODO check image files for existance and correct resolution.
+		// printDicomElements(FileUtils.getDCMFile(cephfile));
 
-        // TODO check ceph parameters for validity
+	}
 
-        return false;
-    }
+	private Properties loadConfiguration(File cfgFile) throws IOException {
+		Properties tmp = new Properties(cfg);
+		InputStream in = new BufferedInputStream(new FileInputStream(cfgFile));
+		try {
+			tmp.load(in);
+		} finally {
+			in.close();
+		}
+		return tmp;
+	}
 
-    private void storeinDICOMDIR() {
-        // TODO take the cephalogramset and store it in dicomdir format.
-    }
+	public void printConfiguration() {
+		cfg.list(System.out);
+	}
 
-    private Properties makeProperties(String filename) {
-        try {
-            Properties p = new Properties();
-            p.load(Ceph2DICOMDIR.class.getResourceAsStream(filename));
-            return p;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
+	private boolean checkParameters() {
+		// TODO check image files for existance and correct resolution.
+
+		// TODO check ceph parameters for validity
+
+		return false;
+	}
+
+	private void storeinDICOMDIR() {
+		// TODO take the cephalogramset and store it in dicomdir format.
+	}
+
+	private Properties makeProperties(String filename) {
+		try {
+			Properties p = new Properties();
+			p.load(Ceph2DICOMDIR.class.getResourceAsStream(filename));
+			return p;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }
