@@ -1,18 +1,11 @@
 package org.antoniomagni.dcm4ceph.core;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-
-import org.antoniomagni.dcm4ceph.util.FileUtils;
-import org.dcm4che2.data.DicomElement;
-import org.dcm4che2.data.DicomObject;
-import org.dcm4che2.io.DicomInputStream;
 
 /**
  * 
  * @author Antonio Magni <dcm4ceph@antoniomagni.org>
- *
+ * 
  */
 public class CephalogramTest {
 
@@ -21,39 +14,20 @@ public class CephalogramTest {
 	 */
 	public static void main(String[] args) {
 
-		File cephfile = new File(args[0]);
-		
-		Cephalogram ceph = new Cephalogram(cephfile);
-		ceph.setStudyDescription("DCM4CEPH TEST");
-		ceph.setPosteroAnterior();
-		
-		File dcmfile = ceph.writeDCM();
-//		printDicomElements(FileUtils.getDCMFile(cephfile));
-	}
-	
-	public static void printDicomElements(File dcmfile){
-		DicomObject dcmobj;
-		try {
-			dcmobj = load(dcmfile);
-			Iterator<DicomElement> iter = dcmobj.datasetIterator();
-			while (iter.hasNext()){
-				System.out.println(iter.next().toString());
-			}
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		File cephfile1 = new File(args[0]);
+		File cephfile2 = new File(args[1]);
+		File fidfile = new File(args[2]);
 
-		
+		BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
+				fidfile);
+
+		cephSet.makeDicomDir(new File(cephfile1.getParent() + File.separator
+				+ "BBcephset"));
+
+		// printDicomElements(FileUtils.getDCMFile(cephfile));
 	}
-	
-    private static DicomObject load(File fname) throws IOException
-    {
-        DicomInputStream dis = new DicomInputStream(fname);
-        return dis.readDicomObject();
-    }
-    
+
+	// TODO make this class an aofficial testing class.
 
 
 }

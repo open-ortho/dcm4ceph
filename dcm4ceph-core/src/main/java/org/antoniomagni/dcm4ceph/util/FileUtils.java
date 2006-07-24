@@ -36,9 +36,36 @@ import java.io.FileNotFoundException;
  */
 public class FileUtils {
 
+	/**
+	 * Make a new file with dcm extension.
+	 * <p>
+	 * Create a new File object, based on file, by replacing its extension with
+	 * dcm.
+	 * 
+	 * @param file
+	 * @return
+	 */
 	public static File getDCMFile(File file) {
 		try {
-			return FileUtils.getFileNewExtension(file, "dcm");
+			return getFileNewExtension(file, "dcm");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Get the filename for a dcm file.
+	 * <p>
+	 * Replaces the exttension from file with dcm, and reutrns just the name of
+	 * the new dcm file.
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public static String getDCMFileName(File file) {
+		try {
+			return getFileNewExtension(file, "dcm").getName();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;

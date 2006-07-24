@@ -25,8 +25,18 @@
 package org.antoniomagni.dcm4ceph.core;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
+import org.dcm4che2.data.DicomObject;
+import org.dcm4che2.data.Tag;
+import org.dcm4che2.io.DicomInputStream;
+import org.dcm4che2.io.StopTagInputHandler;
+import org.dcm4che2.media.ApplicationProfile;
+import org.dcm4che2.media.BasicApplicationProfile;
+import org.dcm4che2.media.DicomDirReader;
+import org.dcm4che2.media.DicomDirWriter;
+import org.dcm4che2.media.FilesetInformation;
 import org.dcm4che2.util.UIDUtils;
 
 /**
@@ -42,101 +52,152 @@ import org.dcm4che2.util.UIDUtils;
  * 
  */
 public class BBCephalogramSet {
-    private Cephalogram lateral, pa;
+	private DicomDirReader dicomdir;
 
-    private SBFiducialSet sbFiducialSet;
+	private ApplicationProfile ap = new BasicApplicationProfile();
 
-    private String StudyUID, SeriesUID;
+	private Cephalogram ceph1, ceph2;
 
-    public BBCephalogramSet(File lateralFile, File paFile, File fiducialFile) {
-        lateral = new Cephalogram(lateralFile);
-        pa = new Cephalogram(paFile);
+	private SBFiducialSet sbFiducialSet;
 
-        // The bolton collection has scanned lateral and pa cephs with the same
-        // resolution and image setting. Therefore, it doesn't matter which of
-        // the two images the fiducial set references to.
-        sbFiducialSet = new SBFiducialSet(pa.getUID(), fiducialFile);
-    }
+	private String StudyUID;
 
-    void init() {
-        StudyUID = UIDUtils.createUID();
-        SeriesUID = UIDUtils.createUID();
+	public BBCephalogramSet(File ceph1File, File ceph2File, File fiducialFile) {
+		ceph1 = new Cephalogram(ceph1File);
+		ceph2 = new Cephalogram(ceph2File);
 
-        lateral.setStudyUID(StudyUID);
-        lateral.setSeriesUID(SeriesUID);
-        lateral.setLeftLateral();
+		String[] cephUIDs = { ceph1.getUID(), ceph2.getUID() };
+		sbFiducialSet = new SBFiducialSet(cephUIDs, fiducialFile);
+		init();
+	}
 
-        pa.setStudyUID(StudyUID);
-        pa.setSeriesUID(SeriesUID);
-        pa.setPosteroAnterior();
-        
-        sbFiducialSet.setStudyUID(StudyUID);
-        sbFiducialSet.setSeriesUID(SeriesUID);
-    }
+	void init() {
+		StudyUID = UIDUtils.createUID();
 
-    public void setFiducialSetProperties(Properties fidsetprops) {
-        sbFiducialSet.loadProperties(fidsetprops);
-    }
+		ceph1.setStudyUID(StudyUID);
+		ceph1.setSeriesUID(UIDUtils.createUID());
 
-    /**
-     * @return Returns the lateral cephalogram.
-     */
-    public Cephalogram getLateral() {
-        return lateral;
-    }
+		ceph2.setStudyUID(StudyUID);
+		ceph2.setSeriesUID(UIDUtils.createUID());
 
-    /**
-     * @param lateral
-     *            The lateral cephalogram to set.
-     */
-    public void setLateral(Cephalogram lateral) {
-        this.lateral = lateral;
-    }
+		sbFiducialSet.setStudyUID(StudyUID);
+		sbFiducialSet.setSeriesUID(UIDUtils.createUID());
+	}
 
-    /**
-     * @return Returns the pa cephalogram.
-     */
-    public Cephalogram getPa() {
-        return pa;
-    }
+	public void setFiducialSetProperties(Properties fidsetprops) {
+		sbFiducialSet.loadProperties(fidsetprops);
+	}
 
-    /**
-     * @param pa
-     *            The pa cephalogram to set.
-     */
-    public void setPa(Cephalogram pa) {
-        this.pa = pa;
-    }
+	/**
+	 * @return Returns the lateral cephalogram.
+	 */
+	public Cephalogram getCeph1() {
+		return ceph1;
+	}
 
-    /**
-     * @return Returns the sbFiducialSet.
-     */
-    public SBFiducialSet getSbFiducialSet() {
-        return sbFiducialSet;
-    }
+	/**
+	 * @param lateral
+	 *            The lateral cephalogram to set.
+	 */
+	public void setCeph1(Cephalogram lateral) {
+		this.ceph1 = lateral;
+	}
 
-    /**
-     * @param sbFiducialSet
-     *            The sbFiducialSet to set.
-     */
-    public void setSbFiducialSet(SBFiducialSet sbFiducialSet) {
-        this.sbFiducialSet = sbFiducialSet;
-    }
+	/**
+	 * @return Returns the pa cephalogram.
+	 */
+	public Cephalogram getCeph2() {
+		return ceph2;
+	}
 
-    /**
-     * Write out this cephalogram set to a directory.
-     * 
-     * @param rootdir
-     */
-    public void makeDicomDir(File rootdir) {
-        // TODO
-    }
+	/**
+	 * @param pa
+	 *            The pa cephalogram to set.
+	 */
+	public void setCeph2(Cephalogram pa) {
+		this.ceph2 = pa;
+	}
 
-    public void writeLateralDcm() {
-        lateral.writeDCM();
-    }
+	/**
+	 * @return Returns the sbFiducialSet.
+	 */
+	public SBFiducialSet getSbFiducialSet() {
+		return sbFiducialSet;
+	}
 
-    public void writePaDcm() {
-        pa.writeDCM();
-    }
+	/**
+	 * @param sbFiducialSet
+	 *            The sbFiducialSet to set.
+	 */
+	public void setSbFiducialSet(SBFiducialSet sbFiducialSet) {
+		this.sbFiducialSet = sbFiducialSet;
+	}
+
+	/**
+	 * Write out this cephalogram set to a directory.
+	 * 
+	 * @param rootdir
+	 */
+	public void makeDicomDir(File rootdir) {
+		File ceph1dir = new File(rootdir, "ceph1");
+		File ceph2dir = new File(rootdir, "ceph2");
+		File fiducialdir = new File(rootdir, "fiducials");
+		ceph1dir.mkdir();
+		ceph2dir.mkdir();
+		fiducialdir.mkdir();
+
+		FilesetInformation fsinfo = new FilesetInformation();
+		fsinfo.init();
+		try {
+			dicomdir = new DicomDirWriter(new File(rootdir.getAbsolutePath()
+					+ File.separator + "DICOMDIR"), fsinfo);
+
+			addFile(ceph1.writeDCM(ceph1dir.getAbsolutePath(), null));
+			addFile(ceph2.writeDCM(ceph2dir.getAbsolutePath(), null));
+			addFile(sbFiducialSet.writeDCM(fiducialdir.getAbsolutePath(), null));
+
+			dicomdir.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private int addFile(File f) throws IOException {
+		if (f.isDirectory()) {
+			int n = 0;
+			File[] fs = f.listFiles();
+			for (int i = 0; i < fs.length; i++) {
+				n += addFile(fs[i]);
+			}
+			return n;
+		}
+
+        DicomInputStream in = new DicomInputStream(f);
+        in.setHandler(new StopTagInputHandler(Tag.PixelData));
+        DicomObject dcmobj =  in.readDicomObject();
+        DicomObject patrec = ap.makePatientDirectoryRecord(dcmobj);
+        DicomObject styrec = ap.makeStudyDirectoryRecord(dcmobj);
+        DicomObject serrec = ap.makeSeriesDirectoryRecord(dcmobj);
+        DicomObject instrec = 
+            	ap.makeInstanceDirectoryRecord(dcmobj, dicomdir.toFileID(f));
+
+        DicomObject rec = ((DicomDirWriter) dicomdir).addPatientRecord(patrec);
+        rec = ((DicomDirWriter) dicomdir).addStudyRecord(rec, styrec);
+        rec = ((DicomDirWriter) dicomdir).addSeriesRecord(rec, serrec);
+        ((DicomDirWriter) dicomdir).addChildRecord(rec, instrec);
+        System.out.print('.');
+        return 1;
+	}
+
+	public void writeCeph1Dcm() {
+		if (ceph1 != null)
+			ceph1.writeDCM();
+	}
+
+	public void writeCeph2Dcm() {
+		if (ceph2 != null)
+			ceph2.writeDCM();
+	}
 }

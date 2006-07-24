@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
@@ -43,7 +44,6 @@ import javax.imageio.stream.FileImageInputStream;
 import org.antoniomagni.dcm4ceph.util.DcmUtils;
 import org.antoniomagni.dcm4ceph.util.FileUtils;
 import org.dcm4che2.data.BasicDicomObject;
-import org.dcm4che2.data.DicomElement;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.data.UID;
@@ -59,7 +59,12 @@ import org.dcm4che2.iod.module.macro.ViewCode;
 import org.dcm4che2.iod.validation.ValidationContext;
 import org.dcm4che2.iod.validation.ValidationResult;
 import org.dcm4che2.iod.value.ImageLaterality;
+import org.dcm4che2.iod.value.ImageOrientationPatient;
+import org.dcm4che2.iod.value.ImageTypeValue1;
+import org.dcm4che2.iod.value.ImageTypeValue2;
+import org.dcm4che2.iod.value.ImageTypeValue3;
 import org.dcm4che2.iod.value.Modality;
+import org.dcm4che2.iod.value.PatientOrientation;
 import org.dcm4che2.iod.value.PhotometricInterpretation;
 import org.dcm4che2.iod.value.PixelRepresentation;
 import org.dcm4che2.iod.value.PositionerType;
@@ -89,19 +94,13 @@ public class Cephalogram extends DXImage {
 	private String transferSyntax = UID.JPEGBaseline1;
 
 	private Properties instanceProperties;
+	
+	public static final String[] PRIMARYIMAGETYPE = { ImageTypeValue1.ORIGINAL,
+		ImageTypeValue2.PRIMARY, ImageTypeValue3.NULL };
 
-	// private SBFiducialSet sbFiducialSet;
+	public static final String[] SECONDARYIMAGETYPE = { ImageTypeValue1.ORIGINAL,
+		ImageTypeValue2.SECONDARY, ImageTypeValue3.NULL };
 
-	// Cephalogram(String SeriesInstanceUID) {
-	// this();
-	// this.setSeriesUID(SeriesInstanceUID);
-	// }
-	//
-	// public Cephalogram(Properties cephprops) {
-	// this();
-	// setFromProperties(cephprops);
-	// }
-	//
 	public Cephalogram(File cephFile) {
 		super(new BasicDicomObject());
 		instanceProperties = new Properties();
@@ -124,11 +123,6 @@ public class Cephalogram extends DXImage {
 		super(dcmobj);
 	}
 
-	// Cephalogram() {
-	// super(new BasicDicomObject());
-	// init();
-	// }
-	//
 	/**
 	 * Perform initialization procedure.
 	 * <p>
@@ -149,9 +143,12 @@ public class Cephalogram extends DXImage {
 		getDXSeriesModule().setSeriesDateTime(new Date());
 		getDXSeriesModule().setPresentationIntentType(
 				PresentationIntentType.PROCESSING);
-		
+
 		// Set the Image Module attributes
 		getDXImageModule().setSamplesPerPixel(1);
+
+		setPrimaryImageType();
+
 
 		// Set Positioner type to CEPHALOSTAT
 		getDXPositioningModule().setPositionerType(PositionerType.CEPHALOSTAT);
@@ -176,6 +173,28 @@ public class Cephalogram extends DXImage {
 	}
 
 	/**
+	 * Set this cephalogram to ORIGINAL/PRIMARY.
+	 * <p>
+	 * This is the default
+	 *
+	 *
+	 */
+	public void setPrimaryImageType(){
+		getDXImageModule().setImageType(PRIMARYIMAGETYPE);
+	}
+	
+	/**
+	 * Set this cephalogram to ORIGINAL/SECONDARY.
+	 * <p>
+	 * Use this when the cephalogram does not come directly from the source.
+	 *
+	 */
+	public void setSecondaryImageType(){
+		getDXImageModule().setImageType(SECONDARYIMAGETYPE);
+		// TODO find out if scanned cephs are considered secondary.
+	}
+	
+	/**
 	 * Prepare object for writing.
 	 * <p>
 	 * This method sets the various dicom attributes that are specific to this
@@ -196,12 +215,17 @@ public class Cephalogram extends DXImage {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		DcmUtils.ensureUID(dcmobj, Tag.StudyInstanceUID);
+		DcmUtils.ensureUID(dcmobj, Tag.SeriesInstanceUID);
+		DcmUtils.ensureUID(dcmobj, Tag.SOPInstanceUID);
 
+		dcmobj.putString(Tag.SpecificCharacterSet, VR.CS, charset);
+		dcmobj.initFileMetaInformation(transferSyntax);
 	}
 
 	public void validate(ValidationContext ctx, ValidationResult result) {
 		super.validate(ctx, result);
-		BasicDicomObject testobj = new BasicDicomObject();
+		//BasicDicomObject testobj = new BasicDicomObject();
 
 		if (getDXImageModule().getBitsAllocated() < 16)
 			result.logInvalidValue(Tag.BitsAllocated, dcmobj);
@@ -267,6 +291,7 @@ public class Cephalogram extends DXImage {
 				cephprops.getProperty("patientOrientationRow"),
 				cephprops.getProperty("patientOrientationColumn") };
 		getDXImageModule().setPatientOrientation(patientOrientation);
+		setImageOrientation(patientOrientation);
 
 		getDXSeriesModule().setSeriesNumber(
 				cephprops.getProperty("seriesNumber"));
@@ -280,6 +305,31 @@ public class Cephalogram extends DXImage {
 			setPosteroAnterior();
 		if (cephprops.getProperty("cephalogramType").equals("L"))
 			setLeftLateral();
+	}
+
+	private void setImageOrientation(String[] patientOrientation2) {
+		if (Arrays.equals(patientOrientation2, PatientOrientation.AF))
+			dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
+					ImageOrientationPatient.AF);
+
+		else if (Arrays.equals(patientOrientation2, PatientOrientation.PF))
+			dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
+					ImageOrientationPatient.PF);
+
+		else if (Arrays.equals(patientOrientation2, PatientOrientation.LF))
+			dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
+					ImageOrientationPatient.LF);
+
+		else if (Arrays.equals(patientOrientation2, PatientOrientation.RF))
+			dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
+					ImageOrientationPatient.RF);
+
+		else if (Arrays.equals(patientOrientation2, PatientOrientation.FP))
+			dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
+					ImageOrientationPatient.FP);
+
+		else
+			System.err.println("Cannot set image orientation correctly");
 	}
 
 	/**
@@ -425,6 +475,16 @@ public class Cephalogram extends DXImage {
 		return imageFile;
 	}
 
+	/**
+	 * Gets the pure file name of the DICOM representation of this Cephalogram.
+	 * 
+	 * @return
+	 */
+	public String getDCMFileName() {
+		return FileUtils.getDCMFileName(imageFile);
+
+	}
+
 	private boolean validatePixelSpacing() {
 		boolean invalid = false;
 		float[] pixelspacing = getDXDetectorModule().getPixelSpacing();
@@ -503,7 +563,8 @@ public class Cephalogram extends DXImage {
 	public void setPosteroAnterior() {
 		setOrientation(180, 0, (ViewCode) setCode(new ViewCode(), "R-10214",
 				"postero-anterior", "SNM3"));
-		getDXSeriesModule().setSeriesDescription("POSTERO-ANTERIOR CEPHALOGRAM");
+		getDXSeriesModule()
+				.setSeriesDescription("POSTERO-ANTERIOR CEPHALOGRAM");
 
 	}
 
@@ -593,7 +654,9 @@ public class Cephalogram extends DXImage {
 	/**
 	 * Write this Cephalogram in a DICOM .dcm file.
 	 * <p>
-	 * Before writing, checks the validity of the object.
+	 * Before writing, checks the validity of the object. The output file will
+	 * have the same name as the input image file of this Cephalogram, with its
+	 * extension replaced with .dcm and in the same folder.
 	 * 
 	 * @return The {@link File} this object was written to, or null if the
 	 *         object was not written because of its invalidiy
@@ -602,13 +665,46 @@ public class Cephalogram extends DXImage {
 	 * 
 	 */
 	public File writeDCM() {
-		DicomObject dcmobj = this.getDicomObject();
-		DcmUtils.ensureUID(dcmobj, Tag.StudyInstanceUID);
-		DcmUtils.ensureUID(dcmobj, Tag.SeriesInstanceUID);
-		DcmUtils.ensureUID(dcmobj, Tag.SOPInstanceUID);
+		return writeDCM(getDCMFile());
+	}
 
-		dcmobj.putString(Tag.SpecificCharacterSet, VR.CS, charset);
-		dcmobj.initFileMetaInformation(transferSyntax);
+	/**
+	 * Write this Cephalogram in a DICOM .dcm file.
+	 * <p>
+	 * 
+	 * @param path
+	 *            The new directory where to store the filename.
+	 * @param filename
+	 *            The new filename of the file. Can be {@code null} in which
+	 *            case the the value returne by {@link #getDCMFileName()} will
+	 *            be used.
+	 * @return The {@link File} this object was written to, or null if the
+	 *         object was not written because of its invalidiy
+	 */
+	public File writeDCM(String path, String filename) {
+		if (filename == null)
+			filename = getDCMFileName();
+		return writeDCM(new File(path + File.separator + filename));
+	}
+
+	/**
+	 * Write this Cephalogram in a DICOM .dcm file.
+	 * <p>
+	 * Before writing, checks the validity of the object.
+	 * 
+	 * 
+	 * @param dcmFile
+	 *            The output file.
+	 * 
+	 * @return The {@link File} this object was written to, or null if the
+	 *         object was not written because of its invalidiy
+	 * 
+	 * @see #validate(ValidationContext, ValidationResult)
+	 * 
+	 */
+	public File writeDCM(File dcmFile) {
+		if (dcmFile == null)
+			return writeDCM();
 
 		// First prepare the dicom object.
 		prepare();
@@ -617,16 +713,12 @@ public class Cephalogram extends DXImage {
 		ValidationResult results = new ValidationResult();
 		validate(new ValidationContext(), results);
 
-		if (results.isValid())
-			return writeDCM(getDCMFile());
-		else {
+		if (!results.isValid()) {
 			System.err.println("Dicom object did not pass validity tests.");
 			System.err.println(results.getInvalidValues().toString());
 			return null;
 		}
-	}
 
-	private File writeDCM(File dcmFile) {
 		int bufferSize = 8192;
 
 		try {
@@ -763,6 +855,10 @@ public class Cephalogram extends DXImage {
 
 	private String makeInstanceUID() {
 		return UIDUtils.createUID();
+	}
+
+	public String toString() {
+		return dcmobj.toString();
 	}
 
 }
