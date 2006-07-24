@@ -38,7 +38,7 @@
           <descriptors>
             <descriptor>src/assemble/bin.xml</descriptor>
           </descriptors>
-          <finalName>dcm4ceph</finalName>
+          <finalName>dcm4ceph-1.0-SNAPSHOT</finalName>
         </configuration>
       </plugin>
     </plugins>
