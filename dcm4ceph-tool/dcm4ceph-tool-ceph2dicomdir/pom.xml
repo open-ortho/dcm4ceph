@@ -1,16 +1,21 @@
 <?xml version="1.0"?><project>
   <parent>
     <artifactId>dcm4ceph-tool</artifactId>
-    <groupId>org.antoniomagni.dcm4ceph.tool</groupId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>org.antoniomagni.dcm4ceph</groupId>
+    <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-tool-ceph2dicomdir</artifactId>
-  <name>CEPH2DICOMDIR Cretes dicom directories from cephalograms.</name>
-  <version>1.0-SNAPSHOT</version>
+  <name>Tool: CEPH2DICOMDIR</name>
+  <version>1.0.0</version>
   <url>http://dcm4cepch.antoniomagni.org</url>
   <dependencies>
+      <dependency>
+      <groupId>org.antoniomagni.dcm4ceph</groupId>
+      <artifactId>dcm4ceph-core</artifactId>
+      <version>1.0.0</version>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -22,10 +27,5 @@
       <artifactId>commons-cli</artifactId>
       <version>1.0</version>
     </dependency>
-    <dependency>
-      <groupId>org.antoniomagni.dcm4ceph</groupId>
-	  <artifactId>dcm4ceph-core</artifactId>
-	  <version>1.0-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
+   </dependencies>
 </project>
