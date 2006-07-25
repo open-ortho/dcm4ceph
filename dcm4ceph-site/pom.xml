@@ -1,14 +1,14 @@
 <?xml version="1.0"?><project>
   <parent>
-    <artifactId>dcm4ceph</artifactId>
+    <artifactId>dcm4ceph-ui</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.antoniomagni.dcm4ceph.site</groupId>
+  <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-site</artifactId>
-  <name>Maven</name>
-  <version>1.0-SNAPSHOT</version>
+  <name>DCM4CEPH web site</name>
+  <version>1.0.0</version>
   <url>http://maven.apache.org/maven2</url>
   <inceptionYear>2001</inceptionYear>
   <build>
@@ -16,7 +16,7 @@
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
-          <locales>en,fr</locales>
+          <locales>en,pt</locales>
         </configuration>
       </plugin>
     </plugins>
