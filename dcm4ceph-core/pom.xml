@@ -2,14 +2,14 @@
   <parent>
     <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-core</artifactId>
   <name>DCM4CEPH Core Classes</name>
-  <version>1.0-SNAPSHOT</version>
-  <url>http://maven.apache.org</url>
+  <version>1.0.0</version>
+  <url>http://dcm4ceph.antoniomagni.org</url>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

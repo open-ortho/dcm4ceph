@@ -1,15 +1,42 @@
-
-
-** Compiling
+** Assembling binary package
 
 If you are not familiar with maven, these guidelines will get you
 started.
 
-1. Download and install maven (http://maven.apache.org) 2. run "mvn
-insall" in this directory of the source code. 3. run "mvn
-assembly:assembly" in dcm4ceph-dist directory
+Plese note: maven has some issues. I wasted a whole bunch of time with
+it. For this reason, you will have to use an older maven version (2.0.2)
+to assemble the distribution binary package, and a newer one for
+building the distribution source packages. The older version is not 100%
+compatible with the newer version, which has a bug when assembling
+binary packages or recurrent projects (i.e. of a module that is another
+pom package).
 
-You will find packages waiting for you in dcm4ceph-dist/target/
+1. Download and install maven 2.0.2 (<== !!! 2 not 4)
+(http://maven.apache.org)
+
+2. run "mvn insall" in the root directory of the source code.
+
+3. run "mvn assembly:assembly -P bin" in dcm4ceph-dist directory. You
+will find packages waiting for you in
+
+dcm4ceph-dist/target/
+
+NB: I have purposely lef the profiles in dcm4ceph-dist/pom.xml so I
+would remember how to use them. The dist package will be deprecated,
+once the maven bugs are adressed and a new maven version is released.
+
+
+
+** Assembling source package
+
+1. Download and install maven 2.0.4 (<== !!! 4 not 2)
+(http://maven.apache.org)
+
+2. Run "mvn assembly:assembly" directly in the root of the source tree.
+packages will be in
+
+target/
+
 
 ** Running
 
