@@ -1,13 +1,13 @@
 <?xml version="1.0"?><project>
   <parent>
-    <artifactId>dcm4ceph-ui</artifactId>
+    <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
     <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-site</artifactId>
-  <name>DCM4CEPH web site</name>
+  <name>Web site</name>
   <version>1.0.0</version>
   <url>http://maven.apache.org/maven2</url>
   <inceptionYear>2001</inceptionYear>
@@ -16,7 +16,7 @@
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
         <configuration>
-          <locales>en,pt</locales>
+          <locales>en,pt_BR</locales>
         </configuration>
       </plugin>
     </plugins>
@@ -24,7 +24,7 @@
   <distributionManagement>
     <site>
       <id>website</id>
-      <url>scp://afm@dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph</url>
+      <url>scpexe://afm@dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph</url>
     </site>
   </distributionManagement>
 </project>

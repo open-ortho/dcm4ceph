@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Maven">
+<project name="dcm4ceph">
   <bannerLeft>
-    <name>Maven</name>
+    <name>dcm4ceph</name>
     <src>http://maven.apache.org/images/apache-maven-project.png</src>
-    <href>http://maven.apache.org/</href>
+    <href>http://dcm4ceph.antoniomagni.org/</href>
   </bannerLeft>
   <bannerRight>
     <src>http://maven.apache.org/images/maven-small.gif</src>

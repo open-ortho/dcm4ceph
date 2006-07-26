@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="Maven">
+<project name="dcm4ceph">
   <bannerLeft>
     <name>DICOM for Cephalograms</name>
-    <src>http://maven.apache.org/images/apache-maven-project.png</src>
+    <src>images/dcm4ceph-logo3a.png</src>
     <href>http://dcm4ceph.antoniomagni.org/</href>
   </bannerLeft>
-  <bannerRight>
-    <src>http://maven.apache.org/images/maven-small.gif</src>
-  </bannerRight>
   <body>
     <links>
       <item name="Antonio Magni" href="http://www.antoniomagni.org/" />
       <item name="PANIO" href="http://panio.antoniomagni.org/"/>
       <item name="dcm4che" href="http://dcm4che.sourceforge.net/"/>
+      <item name="português" href="pt_BR/index.html"/>
     </links>
 
-    <menu name="dcm4ceph">
+    <menu name="General">
+      <item name="Home" href="index.html"/>
       <item name="History" href="history.html"/>
       <item name="FAQ" href="faq.html"/>
+    </menu>
+    <menu name="Overview">
+      <item name="How to use" href="index.html"/>
+      <item name="Download" href="history.html"/>
+      <item name="JAVA API Documentation" href="faq.html"/>
     </menu>
   </body>
 </project>

@@ -1,4 +1,8 @@
 <classpath>
   <classpathentry kind="output" path="target/classes"/>
   <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/dcm4che/dcm4che-iod/2.0.7-SNAPSHOT/dcm4che-iod-2.0.7-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/nlog4j/1.2.19/nlog4j-1.2.19.jar"/>
+  <classpathentry kind="var" path="M2_REPO/dcm4che/dcm4che-core/2.0.7-SNAPSHOT/dcm4che-core-2.0.7-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.0.2/xercesImpl-2.0.2.jar"/>
 </classpath>
