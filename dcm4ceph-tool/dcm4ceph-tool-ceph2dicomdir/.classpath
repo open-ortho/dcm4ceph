@@ -1,11 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry output="target/test-classes" kind="src" path="src/test/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dcm4ceph-core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dcm4che-core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/dcm4che-iod"/>
-	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
-	<classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="src" path="/dcm4ceph-core"/>
+  <classpathentry kind="var" path="M2_REPO/org/slf4j/nlog4j/1.2.19/nlog4j-1.2.19.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-cli/commons-cli/1.0/commons-cli-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-lang/commons-lang/1.0/commons-lang-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/xerces/xercesImpl/2.0.2/xercesImpl-2.0.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.0/commons-logging-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/dcm4che/dcm4che-core/2.0.7-SNAPSHOT/dcm4che-core-2.0.7-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/dcm4che/dcm4che-iod/2.0.7-SNAPSHOT/dcm4che-iod-2.0.7-SNAPSHOT.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
 </classpath>
