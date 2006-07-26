@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-core</artifactId>
-  <name>DCM4CEPH Core Classes</name>
+  <name>Core Classes</name>
   <version>1.0.0</version>
   <url>http://dcm4ceph.antoniomagni.org</url>
   <dependencies>
