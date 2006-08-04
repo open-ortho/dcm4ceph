@@ -48,6 +48,7 @@ import org.dcm4che2.iod.module.spatial.GraphicCoordinatesData;
 import org.dcm4che2.iod.validation.ValidationContext;
 import org.dcm4che2.iod.validation.ValidationResult;
 import org.dcm4che2.iod.value.Modality;
+import org.dcm4che2.iod.value.ShapeType;
 import org.dcm4che2.util.UIDUtils;
 
 /**
@@ -529,6 +530,8 @@ public class SBFiducialSet extends SpatialFiducials {
 
 		f.setFiducialIdentifier(type[0]);
 		f.setFiducialDescription(type[1]);
+        
+        f.setShapeType(ShapeType.POINT);
 
 		return f;
 	}
