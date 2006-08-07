@@ -94,12 +94,13 @@ public class Cephalogram extends DXImage {
 	private String transferSyntax = UID.JPEGBaseline1;
 
 	private Properties instanceProperties;
-	
-	public static final String[] PRIMARYIMAGETYPE = { ImageTypeValue1.ORIGINAL,
-		ImageTypeValue2.PRIMARY, ImageTypeValue3.NULL };
 
-	public static final String[] SECONDARYIMAGETYPE = { ImageTypeValue1.ORIGINAL,
-		ImageTypeValue2.SECONDARY, ImageTypeValue3.NULL };
+	public static final String[] PRIMARYIMAGETYPE = { ImageTypeValue1.ORIGINAL,
+			ImageTypeValue2.PRIMARY, ImageTypeValue3.NULL };
+
+	public static final String[] SECONDARYIMAGETYPE = {
+			ImageTypeValue1.ORIGINAL, ImageTypeValue2.SECONDARY,
+			ImageTypeValue3.NULL };
 
 	public Cephalogram(File cephFile) {
 		super(new BasicDicomObject());
@@ -149,7 +150,6 @@ public class Cephalogram extends DXImage {
 
 		setPrimaryImageType();
 
-
 		// Set Positioner type to CEPHALOSTAT
 		getDXPositioningModule().setPositionerType(PositionerType.CEPHALOSTAT);
 
@@ -176,24 +176,24 @@ public class Cephalogram extends DXImage {
 	 * Set this cephalogram to ORIGINAL/PRIMARY.
 	 * <p>
 	 * This is the default
-	 *
-	 *
+	 * 
+	 * 
 	 */
-	public void setPrimaryImageType(){
+	public void setPrimaryImageType() {
 		getDXImageModule().setImageType(PRIMARYIMAGETYPE);
 	}
-	
+
 	/**
 	 * Set this cephalogram to ORIGINAL/SECONDARY.
 	 * <p>
 	 * Use this when the cephalogram does not come directly from the source.
-	 *
+	 * 
 	 */
-	public void setSecondaryImageType(){
+	public void setSecondaryImageType() {
 		getDXImageModule().setImageType(SECONDARYIMAGETYPE);
 		// TODO find out if scanned cephs are considered secondary.
 	}
-	
+
 	/**
 	 * Prepare object for writing.
 	 * <p>
@@ -225,7 +225,7 @@ public class Cephalogram extends DXImage {
 
 	public void validate(ValidationContext ctx, ValidationResult result) {
 		super.validate(ctx, result);
-		//BasicDicomObject testobj = new BasicDicomObject();
+		// BasicDicomObject testobj = new BasicDicomObject();
 
 		if (getDXImageModule().getBitsAllocated() < 16)
 			result.logInvalidValue(Tag.BitsAllocated, dcmobj);
@@ -515,12 +515,20 @@ public class Cephalogram extends DXImage {
 	 *            Magnification in percentage.
 	 */
 	public void setMagnification(String mags) {
-		if (mags != null)
-			setMagnification(Float.parseFloat(mags));
+		if (mags != null) {
+			float mag = Float.parseFloat(mags);
+			mag /= 100;
+			setMagnification(mag);
+		}
 	}
 
+	/**
+	 * Set radiographic magnification.
+	 * 
+	 * @param mag
+	 *            Magnification in ratio, not percentage.
+	 */
 	private void setMagnification(float mag) {
-		mag /= 100;
 		getDXPositioningModule().setEstimatedRadiographicMagnificationFactor(
 				mag);
 	}
