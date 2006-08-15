@@ -8,8 +8,7 @@
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-core</artifactId>
   <name>Core Classes</name>
-  <version>1.0.0</version>
-  <url>http://dcm4ceph.antoniomagni.org</url>
+  <url>http://dcm4ceph.antoniomagni.org/dcm4ceph-core</url>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

@@ -24,8 +24,11 @@
 
 package org.antoniomagni.dcm4ceph.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URLClassLoader;
+import java.util.Properties;
 
 /**
  * 
@@ -36,66 +39,86 @@ import java.io.FileNotFoundException;
  */
 public class FileUtils {
 
-	/**
-	 * Make a new file with dcm extension.
-	 * <p>
-	 * Create a new File object, based on file, by replacing its extension with
-	 * dcm.
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public static File getDCMFile(File file) {
-		try {
-			return getFileNewExtension(file, "dcm");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    /**
+     * Make a new file with dcm extension.
+     * <p>
+     * Create a new File object, based on file, by replacing its extension with
+     * dcm.
+     * 
+     * @param file
+     * @return
+     */
+    public static File getDCMFile(File file) {
+        try {
+            return getFileNewExtension(file, "dcm");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	/**
-	 * Get the filename for a dcm file.
-	 * <p>
-	 * Replaces the exttension from file with dcm, and reutrns just the name of
-	 * the new dcm file.
-	 * 
-	 * @param file
-	 * @return
-	 */
-	public static String getDCMFileName(File file) {
-		try {
-			return getFileNewExtension(file, "dcm").getName();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    /**
+     * Get the filename for a dcm file.
+     * <p>
+     * Replaces the exttension from file with dcm, and reutrns just the name of
+     * the new dcm file.
+     * 
+     * @param file
+     * @return
+     */
+    public static String getDCMFileName(File file) {
+        try {
+            return getFileNewExtension(file, "dcm").getName();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	public static File getPropertiesFile(File file) {
-		try {
-			return FileUtils.getFileNewExtension(file, "properties");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+    public static File getPropertiesFile(File file) {
+        try {
+            return FileUtils.getFileNewExtension(file, "properties");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	public static File getFileNewExtension(File file, String ext)
-			throws FileNotFoundException {
-		if (!file.canRead())
-			throw new FileNotFoundException(
-					"Can't read input Cephalogram Image file: "
-							+ file.getAbsolutePath());
+    public static File getFileNewExtension(File file, String ext)
+            throws FileNotFoundException {
+        if (!file.canRead())
+            throw new FileNotFoundException(
+                    "Can't read input Cephalogram Image file: "
+                            + file.getAbsolutePath());
 
-		if (!ext.startsWith("."))
-			ext = "." + ext;
-		String[] filename = file.getName().split("\\.");
+        if (!ext.startsWith("."))
+            ext = "." + ext;
+        String[] filename = file.getName().split("\\.");
 
-		File newfile = new File(file.getParent() + File.separator + filename[0]
-				+ ext);
+        File newfile = new File(file.getParent() + File.separator + filename[0]
+                + ext);
 
-		return newfile;
-	}
+        return newfile;
+    }
+
+    public static Properties loadProperties(Class c, String conffile) {
+        Log.info("Loading Properties file " + conffile);
+        URLClassLoader cl = (URLClassLoader) c.getClassLoader();
+
+        Properties p = new Properties();
+
+        try {
+            p.load(new BufferedInputStream(cl.findResource(conffile)
+                    .openStream()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.err("Cannot open the configuration file " + conffile);
+            System.exit(1);
+        }
+
+        return p;
+
+    }
+
 
 }
