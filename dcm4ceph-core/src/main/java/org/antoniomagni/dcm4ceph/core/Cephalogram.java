@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
@@ -43,6 +44,7 @@ import javax.imageio.stream.FileImageInputStream;
 
 import org.antoniomagni.dcm4ceph.util.DcmUtils;
 import org.antoniomagni.dcm4ceph.util.FileUtils;
+import org.antoniomagni.dcm4ceph.util.Log;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -113,16 +115,11 @@ public class Cephalogram extends DXImage {
 
         init();
 
-        if (config != null) {
-            try {
-                instanceProperties.load(new FileInputStream(FileUtils
-                        .getPropertiesFile(cephFile)));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        if (config == null) {
+            instanceProperties = FileUtils.loadProperties(FileUtils
+                        .getPropertiesFile(cephFile));
+        } else
+            instanceProperties = FileUtils.loadProperties(config);
 
     }
 
@@ -267,11 +264,13 @@ public class Cephalogram extends DXImage {
                 .setPatientsName(cephprops.getProperty("patientName"));
         getPatientModule().setPatientID(cephprops.getProperty("patientID"));
         try {
+            DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
             getPatientModule().setPatientsBirthDate(
-                    DateFormat.getDateInstance().parse(
+                    formatter.parse(
                             cephprops.getProperty("patientDOB")));
         } catch (ParseException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
+            Log.warn("Could not parse DOB correctly. Setting to null.");
             getPatientModule().setPatientsBirthDate(null);
         }
 
@@ -526,7 +525,7 @@ public class Cephalogram extends DXImage {
      *            Magnification in percentage.
      */
     public void setMagnification(String mags) {
-        if (mags != null)
+        if ((mags != null) && (! mags.equals("")))
             setMagnification(Float.parseFloat(mags));
     }
 

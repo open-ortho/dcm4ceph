@@ -41,4 +41,8 @@ public class Log {
     public static void info(String log){
         System.out.println("INFO: " + log);
     }
+
+    public static void debug(String log) {
+        System.out.println("DEBUG: " + log);
+    }
 }
