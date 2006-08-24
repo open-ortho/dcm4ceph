@@ -264,7 +264,7 @@ public class Cephalogram extends DXImage {
                 .setPatientsName(cephprops.getProperty("patientName"));
         getPatientModule().setPatientID(cephprops.getProperty("patientID"));
         try {
-            DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             getPatientModule().setPatientsBirthDate(
                     formatter.parse(cephprops.getProperty("patientDOB")));
         } catch (ParseException e) {
