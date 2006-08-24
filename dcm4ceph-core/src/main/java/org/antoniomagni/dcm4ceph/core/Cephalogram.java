@@ -26,7 +26,6 @@ package org.antoniomagni.dcm4ceph.core;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -73,6 +72,7 @@ import org.dcm4che2.iod.value.PositionerType;
 import org.dcm4che2.iod.value.PresentationIntentType;
 import org.dcm4che2.iod.value.TableType;
 import org.dcm4che2.util.UIDUtils;
+import org.devlib.schmidt.imageinfo.ImageInfo;
 
 /**
  * This class represents a digital cephalogram.
@@ -81,13 +81,13 @@ import org.dcm4che2.util.UIDUtils;
  * 
  */
 public class Cephalogram extends DXImage {
-    private final double mm2inch = 25.4; // 25.4 mm to an inch.
+    private final double mmPerInch = 25.4; // 25.4 mm to an inch.
 
     private String patientOrientation;
 
     private final int minimumAllowedDPI = 128;
 
-    private int DPI = 300;
+    // private int DPI = 300;
 
     private File imageFile;
 
@@ -107,7 +107,7 @@ public class Cephalogram extends DXImage {
     public Cephalogram(File cephFile) {
         this(cephFile, null);
     }
-    
+
     public Cephalogram(File cephFile, File config) {
         super(new BasicDicomObject());
         instanceProperties = new Properties();
@@ -117,7 +117,7 @@ public class Cephalogram extends DXImage {
 
         if (config == null) {
             instanceProperties = FileUtils.loadProperties(FileUtils
-                        .getPropertiesFile(cephFile));
+                    .getPropertiesFile(cephFile));
         } else
             instanceProperties = FileUtils.loadProperties(config);
 
@@ -266,8 +266,7 @@ public class Cephalogram extends DXImage {
         try {
             DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
             getPatientModule().setPatientsBirthDate(
-                    formatter.parse(
-                            cephprops.getProperty("patientDOB")));
+                    formatter.parse(cephprops.getProperty("patientDOB")));
         } catch (ParseException e) {
             e.printStackTrace();
             Log.warn("Could not parse DOB correctly. Setting to null.");
@@ -448,28 +447,28 @@ public class Cephalogram extends DXImage {
         this.patientOrientation = patientOrientation;
     }
 
-    /**
-     * Gets the image resolution.
-     * <p>
-     * Default resolution is 300 dpi.
-     * 
-     * @return The DPI of the image.
-     */
-    public int getResolution() {
-        return DPI;
-    }
+    // /**
+    // * Gets the image resolution.
+    // * <p>
+    // * Default resolution is 300 dpi.
+    // *
+    // * @return The DPI of the image.
+    // */
+    // public int getResolution() {
+    // return DPI;
+    // }
 
-    /**
-     * Sets the image resolution in DPI.
-     * <p>
-     * Default resolution is 300 dpi.
-     * 
-     * @param dpi
-     */
-    public void setResolution(int dpi) {
-        DPI = dpi;
-    }
-
+    // /**
+    // * Sets the image resolution in DPI.
+    // * <p>
+    // * Default resolution is 300 dpi.
+    // *
+    // * @param dpi
+    // */
+    // public void setResolution(int dpi) {
+    // DPI = dpi;
+    // }
+    //
     /**
      * @param imageFile
      *            The imageFile to set.
@@ -515,7 +514,7 @@ public class Cephalogram extends DXImage {
      * @return The resolution in distance between one pixel and the next.
      */
     public float getMaximumPixelSpacing() {
-        return (float) (1.0 / minimumAllowedDPI * mm2inch);
+        return (float) (1.0 / minimumAllowedDPI * mmPerInch);
     }
 
     /**
@@ -525,7 +524,7 @@ public class Cephalogram extends DXImage {
      *            Magnification in percentage.
      */
     public void setMagnification(String mags) {
-        if ((mags != null) && (! mags.equals("")))
+        if ((mags != null) && (!mags.equals("")))
             setMagnification(Float.parseFloat(mags));
     }
 
@@ -724,9 +723,8 @@ public class Cephalogram extends DXImage {
         validate(new ValidationContext(), results);
 
         if (!results.isValid()) {
-            System.err.println("Dicom object did not pass validity tests.");
+            Log.err("Dicom object did not pass validity tests.");
             System.err.println(results.getInvalidValues().toString());
-            return null;
         }
 
         int bufferSize = 8192;
@@ -818,33 +816,42 @@ public class Cephalogram extends DXImage {
 
     private void setImageAttributes(FileImageInputStream fiis)
             throws IOException {
-        Iterator iter = ImageIO.getImageReaders(fiis);
-        if (!iter.hasNext()) {
-            throw new IOException("Failed to detect image format");
+
+        ImageInfo ii = new ImageInfo();
+        ii.setInput(fiis);
+        ii.setDetermineImageNumber(true); // default is false
+        ii.setCollectComments(true); // default is false
+        if (!ii.check()) {
+            Log.err("Not a supported image file format.");
+            return;
         }
-        ImageReader reader = (ImageReader) iter.next();
-        reader.setInput(fiis);
-        getDXImageModule().setRows(reader.getHeight(0));
-        getDXImageModule().setColumns(reader.getWidth(0));
-        reader.dispose();
-        fiis.seek(0);
+        Log.info(ii.getFormatName() + ", " + ii.getMimeType() + ", "
+                + ii.getWidth() + " x " + ii.getHeight() + " pixels, "
+                + ii.getBitsPerPixel() + " bits per pixel, "
+                + ii.getPhysicalHeightDpi() + "x" + ii.getPhysicalWidthDpi()
+                + " DPI, " + ii.getPhysicalHeightInch() + "x"
+                + ii.getPhysicalWidthInch() + " inch.");
+
+        getDXImageModule().setRows(ii.getHeight());
+        getDXImageModule().setColumns(ii.getWidth());
 
         getDXImageModule().setSamplesPerPixel(1);
         getDXImageModule().setPhotometricInterpretation(
                 PhotometricInterpretation.MONOCHROME2);
 
-        // TODO this should at least come from configuration file.
-        getDXImageModule().setBitsAllocated(16);
-        getDXImageModule().setBitsStored(16);
-        getDXImageModule().setHighBit(15);
+        getDXImageModule().setBitsAllocated(ii.getBitsPerPixel());
+        getDXImageModule().setBitsStored(ii.getBitsPerPixel());
+        getDXImageModule().setHighBit(ii.getBitsPerPixel() - 1);
+
         getDXImageModule().setPixelRepresentation(PixelRepresentation.UNSIGNED);
 
-        float[] ps = new float[2];
-        ps[0] = (float) (1.0 / (float) getResolution() * mm2inch);
-        ps[1] = ps[0];
-        System.out.println("1 / " + getResolution() + " * " + mm2inch + " = "
-                + ps[1]);
-        getDXDetectorModule().setPixelSpacing(ps);
+        float[] imagerPixelSpacing = new float[2];
+        imagerPixelSpacing[0] = (float) (1.0 / ii.getPhysicalWidthDpi() * mmPerInch);
+        imagerPixelSpacing[1] = (float) (1.0 / ii.getPhysicalHeightDpi() * mmPerInch);
+        getDXDetectorModule().setImagerPixelSpacing(imagerPixelSpacing);
+        getDXDetectorModule().setPixelSpacing(imagerPixelSpacing);
+
+        fiis.seek(0);
 
     }
 

@@ -9,25 +9,27 @@ import java.io.File;
  */
 public class CephalogramTest {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
 
-		File cephfile1 = new File(args[0]);
-		File cephfile2 = new File(args[1]);
-		File fidfile = new File(args[2]);
+        File cephfile1 = new File(args[0]);
+        File cephfile2 = new File(args[1]);
+        File fidfile = new File(args[2]);
 
-		BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
-				fidfile);
+        BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
+                fidfile);
 
-		cephSet.makeDicomDir(new File(cephfile1.getParent() + File.separator
-				+ "BBcephset"));
+        File rootdir = new File(cephfile1.getParent() + File.separator
+                + "BBcephset");
+        
+        cephSet.writeCephs(rootdir);
+        cephSet.writeDicomdir(rootdir);
 
-		// printDicomElements(FileUtils.getDCMFile(cephfile));
-	}
+        // printDicomElements(FileUtils.getDCMFile(cephfile));
+    }
 
-	// TODO make this class an aofficial testing class.
-
+    // TODO make this class an aofficial testing class.
 
 }

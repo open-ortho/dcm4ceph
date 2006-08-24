@@ -127,10 +127,14 @@ public class SBFiducialSet extends SpatialFiducials {
      */
     public SBFiducialSet(String[] uids) {
         super(new BasicDicomObject());
-        this.refimages = makeSOP(uids);
+        setReferencedImages(uids);
         init();
     }
 
+    public void setReferencedImages(String[] uids){
+        this.refimages = makeSOP(uids);
+    }
+    
     /**
      * Create a new Fiducial Set with information passed as a {@link Properties}
      * object.
