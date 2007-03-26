@@ -1,0 +1,207 @@
+#LyX 1.4.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 245
+\begin_document
+\begin_header
+\textclass linuxdoc
+\language english
+\inputencoding auto
+\fontscheme default
+\graphics default
+\paperfontsize default
+\papersize default
+\use_geometry false
+\use_amsmath 0
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes true
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset VSpace vfill
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+Documentation for dcm4ceph
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace vfill
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+ANTONIO MAGNI 
+\end_layout
+
+\begin_layout Date
+DATE
+\end_layout
+
+\begin_layout Abstract
+ABSTRACT
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \tableofcontents{}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+dcm4ceph
+\family default
+ is an implementation of the digital cephalogram standard as proposed by
+ Magni in 
+\begin_inset LatexCommand \cite{Magni2006}
+
+\end_inset
+
+.
+ The intention of dcm4ceph is to bring life to the standard by transforming
+ its words into JAVA code and providing an alternative approach to the documenta
+tion through an easy-to-use framework.
+ Its primary use is to test the standard, but it also offers the first steps
+ towards a unique way for storing digital cephalograms in DICOM 
+\begin_inset LatexCommand \cite{DICOM2006}
+
+\end_inset
+
+ format.
+\end_layout
+
+\begin_layout Standard
+DICOM is the de facto medical imaging standard.
+ It is used in most radiology departments throughout the world.
+ It was first conceived for 
+\begin_inset Quotes eld
+\end_inset
+
+new
+\begin_inset Quotes erd
+\end_inset
+
+ imaging methodologies, such as CT and MR, which are directly generated
+ by the computer.
+ However, it soon extended its domain to all medical images, including photograp
+hs and scanned media.
+ Over the past decade, Cephalograms have been increasingly moving to the
+ digital world.
+ This has happened through the development of fully and partially digital
+ cephalometers.
+ In addition to the storage advantages that digital media offers, (minimal
+ space requirements, easy searching and retrieving capabilities) the transition
+ from analog film to digital media has received pressure for the non-decaying
+ characteristics of digital media.
+ In fact, one of the greatest advantages of digital media over analog film,
+ is that, if properly backed up, digital media does not suffer from any
+ kind of image alteration over time.
+\end_layout
+
+\begin_layout Standard
+Various application for digital head films arouse over the past decade,
+ which have never been directly addressed by the DICOM specifications.
+ Cephalograms are more than just plain radiographs of the skull: they are
+ used for measurment studies, and must therefore contain all information
+ that can guarantee that such measurments can be accurately related to the
+ patient.
+\end_layout
+
+\begin_layout Standard
+Although DICOM doesn't directly address cephalograms, it does contain all
+ necessary elements to correctly represent all of the cephalogram requirements
+ digitally.
+ The standard presented by Magni 
+\begin_inset LatexCommand \cite{Magni2006}
+
+\end_inset
+
+ describes how and which elements of DICOM to use to correctly describe
+ cephalogram requirements.
+\end_layout
+
+\begin_layout Standard
+dcm4ceph is a set of development libraries, and not a full end-user program
+ with GUI.
+ Its purpose is to aid the development of end-user programs, by providing
+ the connection between the end-user program and the standard.
+ This way, if the standard where to change, it would not be necessary to
+ modify the end-user program.
+\end_layout
+
+\begin_layout Section
+Structure
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename fig_dcm4cephClassDiagram.pdf
+	display none
+	height 90theight%
+	keepAspectRatio
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Class diagram
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The org.antoniomagni.dcm4ceph-core package consists of 2 core classes: Cephalogram
+ and FiducialPoint.
+ The Cephalogram class provides an eays interface for all cephalogram requiremen
+ts (such as magnification, patient demographics and orientation), while
+ the FiducialPoint is class to represent the fiducials as specified by the
+ standard.
+ Both classes are not meant to be used directly: it is encouraged to make
+ use of 
+\end_layout
+
+\begin_layout Standard
+\begin_inset LatexCommand \bibtex[plain]{/home/afm/Documents/BibliographyDB/dictionaries,/home/afm/Documents/BibliographyDB/orthodontics,/home/afm/Documents/BibliographyDB/computer_standards,/Volumes/home/afm/Documents/BibliographyDB/orthodontic_software,/Volumes/home/afm/Documents/BibliographyDB/CompSci,/Volumes/home/afm/Documents/BibliographyDB/mypublications}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
