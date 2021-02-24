@@ -2,12 +2,12 @@ package org.antoniomagni.dcm4ceph.core;
 
 import java.io.File;
 
-import org.antoniomagni.dcm4ceph.cwru.BBCephalogramSet;
+import org.antoniomagni.dcm4ceph.core.BBCephalogramSet;
 
 /**
- * 
+ *
  * @author Antonio Magni <dcm4ceph@antoniomagni.org>
- * 
+ *
  */
 public class CephalogramTest {
 
@@ -25,7 +25,7 @@ public class CephalogramTest {
 
         File rootdir = new File(cephfile1.getParent() + File.separator
                 + "BBcephset");
-        
+
         cephSet.writeCephs(rootdir);
         cephSet.writeDicomdir(rootdir);
 

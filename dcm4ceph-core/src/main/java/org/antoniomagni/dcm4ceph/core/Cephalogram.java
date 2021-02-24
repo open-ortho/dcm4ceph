@@ -261,16 +261,16 @@ public class Cephalogram extends DXImage {
 
     public void setFromProperties(Properties cephprops) {
         getPatientModule()
-                .setPatientsName(cephprops.getProperty("patientName"));
+                .setPatientName(cephprops.getProperty("patientName"));
         getPatientModule().setPatientID(cephprops.getProperty("patientID"));
         try {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            getPatientModule().setPatientsBirthDate(
+            getPatientModule().setPatientBirthDate(
                     formatter.parse(cephprops.getProperty("patientDOB")));
         } catch (ParseException e) {
             e.printStackTrace();
             Log.warn("Could not parse DOB correctly. Setting to null.");
-            getPatientModule().setPatientsBirthDate(null);
+            getPatientModule().setPatientBirthDate(null);
         }
 
         try {
@@ -282,7 +282,7 @@ public class Cephalogram extends DXImage {
             // e.printStackTrace();
             getGeneralStudyModule().setStudyDateTime(new Date());
         }
-        getPatientModule().setPatientsSex(cephprops.getProperty("patientSex"));
+        getPatientModule().setPatientSex(cephprops.getProperty("patientSex"));
 
         getGeneralStudyModule().setReferringPhysiciansName(
                 cephprops.getProperty("referringPhysician"));
@@ -535,8 +535,8 @@ public class Cephalogram extends DXImage {
     }
 
     private void setDistances(float SID, float SOD) {
-        getDXPositioningModule().setDistanceSourcetoDetector(SID);
-        getDXPositioningModule().setDistanceSourcetoPatient(SOD);
+        getDXPositioningModule().setDistanceSourceToDetector(SID);
+        getDXPositioningModule().setDistanceSourceToPatient(SOD);
 
         setMagnification(SID / SOD);
     }
@@ -655,7 +655,7 @@ public class Cephalogram extends DXImage {
         imagesops[0]
                 .setReferencedSOPClassUID(UID.DigitalXRayImageStorageForProcessing);
         imagesops[0].setReferencedSOPInstanceUID(uid);
-        imagesops[0].setPurposeofReferenceCode(makeReferencedImageCode());
+        imagesops[0].setPurposeOfReferenceCode(makeReferencedImageCode());
 
         getDXImageModule().setReferencedImages(imagesops);
     }
@@ -791,7 +791,7 @@ public class Cephalogram extends DXImage {
 
         fidsops[0].setReferencedSOPClassUID(UID.SpatialFiducialsStorage);
         fidsops[0].setReferencedSOPInstanceUID(uid);
-        fidsops[0].setPurposeofReferenceCode(makeReferencedFiducialCode());
+        fidsops[0].setPurposeOfReferenceCode(makeReferencedFiducialCode());
 
         getDXImageModule().setReferencedInstances(fidsops);
     }

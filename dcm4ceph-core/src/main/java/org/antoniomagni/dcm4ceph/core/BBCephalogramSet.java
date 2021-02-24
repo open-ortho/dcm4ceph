@@ -6,20 +6,20 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * 
- * Antonio Magni 
+ *
+ * Antonio Magni
  * email: dcm4ceph@antoniomagni.org
  * website: http://dcm4ceph.antoniomagni.org
- * 
+ *
  */
 
 package org.antoniomagni.dcm4ceph.core;
@@ -38,7 +38,7 @@ import org.dcm4che2.media.ApplicationProfile;
 import org.dcm4che2.media.BasicApplicationProfile;
 import org.dcm4che2.media.DicomDirReader;
 import org.dcm4che2.media.DicomDirWriter;
-import org.dcm4che2.media.FilesetInformation;
+import org.dcm4che2.media.FileSetInformation;
 import org.dcm4che2.util.UIDUtils;
 
 /**
@@ -49,9 +49,9 @@ import org.dcm4che2.util.UIDUtils;
  * poster-anterior {@link org.antoniomagni.dcm4ceph.core.Cephalogram}s and one
  * {@link org.antoniomagni.dcm4ceph.core.SBFiducialSet}. These all have the
  * same Study and Series numbers.
- * 
+ *
  * @author afm
- * 
+ *
  */
 public class BBCephalogramSet {
     private DicomDirReader dicomdir;
@@ -74,7 +74,7 @@ public class BBCephalogramSet {
      * populate this instance. It will load the configuration from the default
      * file name, which is the same root as the image file, with .properties as
      * extension.
-     * 
+     *
      * @param ceph1File
      *            Lateral or PA image file.
      * @param ceph2File
@@ -98,7 +98,7 @@ public class BBCephalogramSet {
      * objects. This means the caller has to do all the job, and take care of
      * setting the appropriate reference making use of the
      * {@link SBFiducialSet#setReferencedImages(String[])} method.
-     * 
+     *
      * @param ceph1
      *            Lateral or PA {@link Cephalogram}
      * @param ceph2
@@ -120,12 +120,12 @@ public class BBCephalogramSet {
      * Construct a new set of cephalograms from files.
      * <p>
      * Same as
-     * 
+     *
      * <pre>
      * BBCephalogramSet(new File((String) argList.get(0)), new File((String) argList
      *         .get(1)), new File((String) argList.get(2)));
      * </pre>
-     * 
+     *
      * @param argList
      */
     public BBCephalogramSet(List argList) {
@@ -197,7 +197,7 @@ public class BBCephalogramSet {
 
     /**
      * Write out this cephalogram set to a directory.
-     * 
+     *
      * @param rootdir
      */
     public void writeCephs(File rootdir) {
@@ -208,7 +208,7 @@ public class BBCephalogramSet {
         ceph2dir.mkdirs();
         fiducialdir.mkdirs();
 
-        FilesetInformation fsinfo = new FilesetInformation();
+        FileSetInformation fsinfo = new FileSetInformation();
         fsinfo.init();
         try {
             dicomdir = new DicomDirWriter(new File(rootdir.getAbsolutePath()
@@ -228,7 +228,7 @@ public class BBCephalogramSet {
     }
 
     public void writeDicomdir(File rootdir) {
-        FilesetInformation fsinfo = new FilesetInformation();
+        FileSetInformation fsinfo = new FileSetInformation();
         fsinfo.init();
         try {
             dicomdir = new DicomDirWriter(new File(rootdir.getAbsolutePath()
