@@ -62,7 +62,7 @@ public class Ceph2DICOMDIR {
 		BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
 				fidfile);
 
-		cephSet.makeDicomDir(new File(cephfile1.getParent() + File.separator
+		cephSet.writeDicomdir(new File(cephfile1.getParent() + File.separator
 				+ "BBcephset"));
 
 		// printDicomElements(FileUtils.getDCMFile(cephfile));

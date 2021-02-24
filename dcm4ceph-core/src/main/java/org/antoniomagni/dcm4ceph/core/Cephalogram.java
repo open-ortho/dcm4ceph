@@ -6,20 +6,20 @@
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
- * 
- * Antonio Magni 
+ *
+ * Antonio Magni
  * email: dcm4ceph@antoniomagni.org
  * website: http://dcm4ceph.antoniomagni.org
- * 
+ *
  */
 
 package org.antoniomagni.dcm4ceph.core;
@@ -76,9 +76,9 @@ import org.devlib.schmidt.imageinfo.ImageInfo;
 
 /**
  * This class represents a digital cephalogram.
- * 
+ *
  * @author afm
- * 
+ *
  */
 public class Cephalogram extends DXImage {
     private final double mmPerInch = 25.4; // 25.4 mm to an inch.
@@ -184,8 +184,8 @@ public class Cephalogram extends DXImage {
      * Set this cephalogram to ORIGINAL/PRIMARY.
      * <p>
      * This is the default
-     * 
-     * 
+     *
+     *
      */
     public void setPrimaryImageType() {
         getDXImageModule().setImageType(PRIMARYIMAGETYPE);
@@ -195,7 +195,7 @@ public class Cephalogram extends DXImage {
      * Set this cephalogram to ORIGINAL/SECONDARY.
      * <p>
      * Use this when the cephalogram does not come directly from the source.
-     * 
+     *
      */
     public void setSecondaryImageType() {
         getDXImageModule().setImageType(SECONDARYIMAGETYPE);
@@ -207,10 +207,10 @@ public class Cephalogram extends DXImage {
      * <p>
      * This method sets the various dicom attributes that are specific to this
      * Cephalogram instance.
-     * 
+     *
      * @see #setFromProperties(Properties)
      * @see #setImageAttributes(FileImageInputStream)
-     * 
+     *
      */
     private void prepare() {
         setFromProperties(instanceProperties);
@@ -261,16 +261,16 @@ public class Cephalogram extends DXImage {
 
     public void setFromProperties(Properties cephprops) {
         getPatientModule()
-                .setPatientsName(cephprops.getProperty("patientName"));
+                .setPatientName(cephprops.getProperty("patientName"));
         getPatientModule().setPatientID(cephprops.getProperty("patientID"));
         try {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            getPatientModule().setPatientsBirthDate(
+            getPatientModule().setPatientBirthDate(
                     formatter.parse(cephprops.getProperty("patientDOB")));
         } catch (ParseException e) {
             e.printStackTrace();
             Log.warn("Could not parse DOB correctly. Setting to null.");
-            getPatientModule().setPatientsBirthDate(null);
+            getPatientModule().setPatientBirthDate(null);
         }
 
         try {
@@ -282,7 +282,7 @@ public class Cephalogram extends DXImage {
             // e.printStackTrace();
             getGeneralStudyModule().setStudyDateTime(new Date());
         }
-        getPatientModule().setPatientsSex(cephprops.getProperty("patientSex"));
+        getPatientModule().setPatientSex(cephprops.getProperty("patientSex"));
 
         getGeneralStudyModule().setReferringPhysiciansName(
                 cephprops.getProperty("referringPhysician"));
@@ -346,7 +346,7 @@ public class Cephalogram extends DXImage {
      * <p>
      * This is the identifier that uniquely identifies the Study this
      * cephalogram is part of.
-     * 
+     *
      * @return Returns the instanceNumber.
      */
     public String getStudyUID() {
@@ -358,7 +358,7 @@ public class Cephalogram extends DXImage {
      * <p>
      * This is the identifier that uniquely identifies the Study this
      * cephalogram is part of.
-     * 
+     *
      * @param instanceNumber
      *            The instanceNumber to set.
      */
@@ -368,7 +368,7 @@ public class Cephalogram extends DXImage {
 
     /**
      * Descritpion of the study.
-     * 
+     *
      * @return Returns the description.
      */
     public String getStudyDescription() {
@@ -377,7 +377,7 @@ public class Cephalogram extends DXImage {
 
     /**
      * Descritpion of the study.
-     * 
+     *
      * @param instanceNumber
      */
     public void setStudyDescription(String Description) {
@@ -389,7 +389,7 @@ public class Cephalogram extends DXImage {
      * <p>
      * This is the identifier that uniquely identifies the Series this
      * cephalogram is part of.
-     * 
+     *
      * @return Returns the instanceNumber.
      */
     public String getSeriesUID() {
@@ -401,7 +401,7 @@ public class Cephalogram extends DXImage {
      * <p>
      * This is the identifier that uniquely identifies the Series this
      * cephalogram is part of.
-     * 
+     *
      * @param instanceNumber
      *            The instanceNumber to set.
      */
@@ -413,7 +413,7 @@ public class Cephalogram extends DXImage {
      * Get the unique identifier.
      * <p>
      * This is the identifier that uniquely identifies this image.
-     * 
+     *
      * @return
      */
     public String getUID() {
@@ -426,7 +426,7 @@ public class Cephalogram extends DXImage {
      * This field is supposed to make the correct letters show up, which help
      * orient the examiner understand how the patient is oriented when looking
      * at an image
-     * 
+     *
      * @return Returns the patientOrientation.
      */
     public String getPatientOrientation() {
@@ -439,7 +439,7 @@ public class Cephalogram extends DXImage {
      * This field is supposed to make the correct letters show up, which help
      * orient the examiner understand how the patient is oriented when looking
      * at an image
-     * 
+     *
      * @param patientOrientation
      *            The patientOrientation to set.
      */
@@ -486,7 +486,7 @@ public class Cephalogram extends DXImage {
 
     /**
      * Gets the pure file name of the DICOM representation of this Cephalogram.
-     * 
+     *
      * @return
      */
     public String getDCMFileName() {
@@ -510,7 +510,7 @@ public class Cephalogram extends DXImage {
      * <p>
      * This is a value in mm. Any values greater than this is not allowed, as it
      * is considered to be a sufficient resolution for accurate measurments.
-     * 
+     *
      * @return The resolution in distance between one pixel and the next.
      */
     public float getMaximumPixelSpacing() {
@@ -519,7 +519,7 @@ public class Cephalogram extends DXImage {
 
     /**
      * Set radiographic magnification.
-     * 
+     *
      * @param mag
      *            Magnification in percentage.
      */
@@ -535,19 +535,19 @@ public class Cephalogram extends DXImage {
     }
 
     private void setDistances(float SID, float SOD) {
-        getDXPositioningModule().setDistanceSourcetoDetector(SID);
-        getDXPositioningModule().setDistanceSourcetoPatient(SOD);
+        getDXPositioningModule().setDistanceSourceToDetector(SID);
+        getDXPositioningModule().setDistanceSourceToPatient(SOD);
 
         setMagnification(SID / SOD);
     }
 
     /**
      * Sets patient to detector and patient to x-ray source distances.
-     * 
+     *
      * Distances are measeured from the midsagittal plane for lateral cephs, and
      * transmeatal axis (ear rods) for PA cephs. Detector is either the film or
      * the digitizing detector, in the case of digital x-ray machines.
-     * 
+     *
      * @param SID
      *            Source to Detector distance in mm.
      * @param SOD
@@ -560,14 +560,14 @@ public class Cephalogram extends DXImage {
 
     /**
      * A shortcut for standard postero-anterior cephalograms.
-     * 
+     *
      * Sets:
      * <ul>
      * <li>Primary Angle: 180
      * <li>Secondary Angle: 0
      * <li>View Code: SNM3 R-10214 postero-anterior
      * </ul>
-     * 
+     *
      */
     public void setPosteroAnterior() {
         setOrientation(180, 0, (ViewCode) setCode(new ViewCode(), "R-10214",
@@ -579,14 +579,14 @@ public class Cephalogram extends DXImage {
 
     /**
      * A shortcut for standard antero-posterior cephalograms.
-     * 
+     *
      * Sets:
      * <ul>
      * <li>Primary Angle: 0
      * <li>Secondary Angle: 0
      * <li>View Code: SNM3 R-10206 antero-posterior
      * </ul>
-     * 
+     *
      */
     public void setAnteroPosterior() {
         setOrientation(0, 0, (ViewCode) setCode(new ViewCode(), "R-10206",
@@ -595,14 +595,14 @@ public class Cephalogram extends DXImage {
 
     /**
      * A shortcut for standard right-lateral cephalograms.
-     * 
+     *
      * Sets:
      * <ul>
      * <li>Primary Angle: -90
      * <li>Secondary Angle: 0
      * <li>View Code: SNM3 R-10232 right lateral
      * </ul>
-     * 
+     *
      */
     public void setRightLateral() {
         setOrientation(-90, 0, (ViewCode) setCode(new ViewCode(), "R-10232",
@@ -611,13 +611,13 @@ public class Cephalogram extends DXImage {
 
     /**
      * A shortcut for standard left-lateral cephalograms.
-     * 
+     *
      * <ul>
      * <li>Primary Angle: +90
      * <li>Secondary Angle: 0
      * <li>View Code: SNM3 R-10236 left lateral
      * </ul>
-     * 
+     *
      */
     public void setLeftLateral() {
         setOrientation(90, 0, (ViewCode) setCode(new ViewCode(), "R-10236",
@@ -631,7 +631,7 @@ public class Cephalogram extends DXImage {
      * to identify the patient and date the images was acquired.
      * <p>
      * Type 3
-     * 
+     *
      * @param annotations
      */
     public void setBurnedinAnnotations(boolean annotations) {
@@ -644,7 +644,7 @@ public class Cephalogram extends DXImage {
 
     /**
      * Reference other image of a lateral/pa ceph pair.
-     * 
+     *
      * @param UID
      *            The instance UID of a DX IOD image for processing.
      */
@@ -655,7 +655,7 @@ public class Cephalogram extends DXImage {
         imagesops[0]
                 .setReferencedSOPClassUID(UID.DigitalXRayImageStorageForProcessing);
         imagesops[0].setReferencedSOPInstanceUID(uid);
-        imagesops[0].setPurposeofReferenceCode(makeReferencedImageCode());
+        imagesops[0].setPurposeOfReferenceCode(makeReferencedImageCode());
 
         getDXImageModule().setReferencedImages(imagesops);
     }
@@ -666,12 +666,12 @@ public class Cephalogram extends DXImage {
      * Before writing, checks the validity of the object. The output file will
      * have the same name as the input image file of this Cephalogram, with its
      * extension replaced with .dcm and in the same folder.
-     * 
+     *
      * @return The {@link File} this object was written to, or null if the
      *         object was not written because of its invalidiy
-     * 
+     *
      * @see #validate(ValidationContext, ValidationResult)
-     * 
+     *
      */
     public File writeDCM() {
         return writeDCM(getDCMFile());
@@ -680,7 +680,7 @@ public class Cephalogram extends DXImage {
     /**
      * Write this Cephalogram in a DICOM .dcm file.
      * <p>
-     * 
+     *
      * @param path
      *            The new directory where to store the filename.
      * @param filename
@@ -700,16 +700,16 @@ public class Cephalogram extends DXImage {
      * Write this Cephalogram in a DICOM .dcm file.
      * <p>
      * Before writing, checks the validity of the object.
-     * 
-     * 
+     *
+     *
      * @param dcmFile
      *            The output file.
-     * 
+     *
      * @return The {@link File} this object was written to, or null if the
      *         object was not written because of its invalidiy
-     * 
+     *
      * @see #validate(ValidationContext, ValidationResult)
-     * 
+     *
      */
     public File writeDCM(File dcmFile) {
         if (dcmFile == null)
@@ -773,7 +773,7 @@ public class Cephalogram extends DXImage {
      * <p>
      * This method generates the appopriate code that should be used when
      * referencing the other cephalogram of a lateral/pa pair.
-     * 
+     *
      * @return
      */
     private Code makeReferencedImageCode() {
@@ -791,7 +791,7 @@ public class Cephalogram extends DXImage {
 
         fidsops[0].setReferencedSOPClassUID(UID.SpatialFiducialsStorage);
         fidsops[0].setReferencedSOPInstanceUID(uid);
-        fidsops[0].setPurposeofReferenceCode(makeReferencedFiducialCode());
+        fidsops[0].setPurposeOfReferenceCode(makeReferencedFiducialCode());
 
         getDXImageModule().setReferencedInstances(fidsops);
     }
