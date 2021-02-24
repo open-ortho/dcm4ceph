@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph</artifactId>
@@ -9,6 +7,10 @@
   <description>dcm4ceph is a set of utilities that aids the administration of cephalogram images in DICOM format.</description>
   <name>DICOM for Cephalograms</name>
   <packaging>pom</packaging>
+  <properties>
+    <maven.compiler.source>1.7</maven.compiler.source>
+    <maven.compiler.target>1.7</maven.compiler.target>
+  </properties>
   <modules>
     <!--module>dcm4ceph-ui</module-->
     <!--module>dcm4ceph-dist</module-->
@@ -27,80 +29,87 @@
           </descriptors>
         </configuration>
       </plugin>
-   </plugins>
+    </plugins>
   </build>
 
-    <dependencies>
-      <dependency>
+  <dependencies>
+    <dependency>
       <groupId>dcm4che</groupId>
       <artifactId>dcm4che-core</artifactId>
-      <version>2.0.7-SNAPSHOT</version>
+      <version>2.0.29</version>
     </dependency>
     <dependency>
       <groupId>dcm4che</groupId>
       <artifactId>dcm4che-iod</artifactId>
-      <version>2.0.7-SNAPSHOT</version>
+      <version>2.0.29</version>
     </dependency>
- </dependencies>
+  </dependencies>
 
-  <distributionManagement> 
-    <repository> 
-      <id>brillig.org</id> 
-      <name>dcm4ceph Repository</name> 
-	<url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph/m2repository</url> 
+  <repositories>
+    <repository>
+      <id>dcm4che</id>
+      <url>https://www.dcm4che.org/maven2/</url>
     </repository>
-    
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>brillig.org</id>
+      <name>dcm4ceph Repository</name>
+      <url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph/m2repository</url>
+    </repository>
+
     <site>
-      <id>brillig.org</id> 
-      <name>dcm4ceph web site home</name> 
-	<url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph</url> 
+      <id>brillig.org</id>
+      <name>dcm4ceph web site home</name>
+      <url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph</url>
     </site>
 
-  </distributionManagement> 
-  
-  <reporting> 
-	  <plugins> 
-		<plugin> 
-		  <groupId>org.apache.maven.plugins</groupId> 
-		  <artifactId>maven-project-info-reports-plugin</artifactId> 
-		  <reportSets> 
-			<reportSet> 
-			  <reports> 
-				<report>dependencies</report> 
-				<report>project-team</report> 
-				<report>license</report> 
-				<!--report>mailing-list</report> 
-				<report>cim</report> 
-				<report>issue-tracking</report> 
-				<report>license</report> 
-				<report>scm</report--> 
-			  </reports> 
-			</reportSet> 
-		  </reportSets> 
-		</plugin> 
+  </distributionManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>project-team</report>
+              <report>license</report>
+              <!--report>mailing-list</report>
+				<report>cim</report>
+				<report>issue-tracking</report>
+				<report>license</report>
+				<report>scm</report-->
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-       </plugin>
+      </plugin>
 
-	  </plugins> 
-  </reporting> 
-  
+    </plugins>
+  </reporting>
+
   <developers>
     <developer>
       <id>tinton</id>
       <name>Antonio Magni</name>
       <email>tinton@antoniomagni.org</email>
       <url>http://www.antoniomagni.org</url>
-      <organization>Universidade de Brasˆ‚lia</organization>
+      <organization>Universidade de Brasï¿½ï¿½lia</organization>
       <organizationUrl>http://www.unb.br</organizationUrl>
       <roles>
-      	<role>Developer</role>
-      	<role>Documentation</role>
+        <role>Developer</role>
+        <role>Documentation</role>
       </roles>
       <timezone>-3</timezone>
-      <properties/>
+      <properties />
     </developer>
   </developers>
 
@@ -109,7 +118,7 @@
       <name>GNU Lesser General Public License</name>
       <url>http://www.gnu.org/licenses/lgpl.html</url>
       <distribution>manual</distribution>
-      <comments/>
+      <comments />
     </license>
   </licenses>
 
@@ -119,8 +128,8 @@
   </organization>
 
   <scm>
-<developerConnection>scm:cvs:ext:afm@brillig.org:/home/afm/cvsroot:org/antoniomagni/dcm4ceph</developerConnection>
+    <developerConnection>scm:cvs:ext:afm@brillig.org:/home/afm/cvsroot:org/antoniomagni/dcm4ceph</developerConnection>
   </scm>
-  
+
 
 </project>
