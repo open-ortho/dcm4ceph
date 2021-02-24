@@ -1,14 +1,10 @@
 #!/bin/sh
 
 cd ..
-mvn install
-if [ ! $? -eq 0 ]; then exit; fi
-cd dcm4ceph-dist/
-mvn assembly:assembly
-if [ ! $? -eq 0 ]; then exit; fi
-cd target
-unzip -f dcm4ceph-bin.zip
-if [ ! $? -eq 0 ]; then exit; fi
-cd dcm4ceph/bin
-if [ ! $? -eq 0 ]; then exit; fi
+mvn install || exit
+cd dcm4ceph-dist/ || exit
+mvn assembly:assembly || exit
+cd target || exit
+unzip -f dcm4ceph-bin.zip || exit
+cd dcm4ceph/bin || exit
 ceph2dicomdir
