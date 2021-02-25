@@ -29,7 +29,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Properties;
+import org.apache.commons.cli.*;
 
 import org.antoniomagni.dcm4ceph.core.BBCephalogramSet;
 
@@ -53,19 +55,34 @@ public class Ceph2DICOMDIR {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO set arguments
+		try {
+			Options options = new Options();
+			options.addOption("l", "lateral", true, "Lateral ceph file name.");
+			options.addOption("p", "pa", true, "PA ceph file name.");
+			options.addOption("f", "fiducials", true, "Fiducials file name.");
 
-		File cephfile1 = new File(args[0]);
-		File cephfile2 = new File(args[1]);
-		File fidfile = new File(args[2]);
+			HelpFormatter formatter = new HelpFormatter();
+			final PrintWriter writer = new PrintWriter(System.out);
+			formatter.printUsage(writer, 80, "ceph2dicomdir", options);
+			writer.flush();
 
-		BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
-				fidfile);
+			CommandLineParser parser = new DefaultParser();
+			CommandLine cmd = parser.parse(options, args);
 
-		cephSet.writeDicomdir(new File(cephfile1.getParent() + File.separator
-				+ "BBcephset"));
+			File lateralCephFile = new File(cmd.getOptionValue("l"));
+			File paCephfile = new File(cmd.getOptionValue("p"));
+			File fidfile = new File(cmd.getOptionValue("f"));
 
-		// printDicomElements(FileUtils.getDCMFile(cephfile));
+			BBCephalogramSet cephSet = new BBCephalogramSet(lateralCephFile,paCephfile, fidfile);
+
+			cephSet.writeDicomdir(new File(lateralCephFile.getParent() + File.separator + "BBcephset"));
+		} catch (ParseException e) {
+			System.err.println("ceph2dicomdir: " );
+			System.exit(2);
+		} catch (Exception e) {
+			System.err.println("ceph2dicomdir: " );
+			System.exit(2);
+		}
 
 	}
 
