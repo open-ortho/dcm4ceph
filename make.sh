@@ -3,25 +3,28 @@
 clean() {
     find . -path "*/target/*" -delete
     find . -type d -name "target" -delete
+    echo "Cleaned all targets."
 }
 
 build() {
+    echo "Building..."
     mvn install || exit
 }
 
 dist() {
-    # Build distribution binaries
+    echo "Build distribution binaries"
     cd dcm4ceph-dist || exit
     mvn assembly:assembly -P bin || exit
     cd .. || exit
 }
 
 deploy() {
+    echo "Deploying"
     ROOT="./"
     WEBSITE="afm@noise.brillig.org:public_html/antoniomagni.org/dcm4ceph/download/"
     PACKAGES="${ROOT}dcm4ceph-dist/target/*.zip ${ROOT}dcm4ceph-dist/target/*.tar* ${ROOT}/target/*.zip* ${ROOT}/target/*.tar*"
 
-    rsync -auv ${PACKAGES} "${WEBSITE}" || exit
+    rsync -auv "${PACKAGES}" "${WEBSITE}" || exit
 }
 
 case $1 in
