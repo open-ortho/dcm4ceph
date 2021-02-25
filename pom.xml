@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0-dev</version>
   <description>dcm4ceph is a set of utilities that aids the administration of cephalogram images in DICOM format.</description>
   <name>DICOM for Cephalograms</name>
   <packaging>pom</packaging>

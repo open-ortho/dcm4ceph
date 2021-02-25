@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
-    <version>1.0.0</version>
+    <version>1.1.0-dev</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-dist</artifactId>
   <name>dcm4ceph Distribution Maker</name>
-  <version>1.0.0</version>
+  <version>1.1.0-dev</version>
   <url>http://dcm4ceph.antoniomagni.org</url>
   <packaging>pom</packaging>
   <dependencies>
@@ -22,12 +22,12 @@
     <dependency>
       <groupId>org.antoniomagni.dcm4ceph</groupId>
       <artifactId>dcm4ceph-core</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0-dev</version>
     </dependency>
     <dependency>
       <groupId>org.antoniomagni.dcm4ceph</groupId>
       <artifactId>dcm4ceph-tool-ceph2dicomdir</artifactId>
-      <version>1.0.0</version>
+      <version>1.1.0-dev</version>
     </dependency>
 
   </dependencies>
@@ -42,7 +42,7 @@
               <descriptors>
                 <descriptor>src/assemble/bin.xml</descriptor>
               </descriptors>
-              <finalName>dcm4ceph-1.0.0</finalName>
+              <finalName>dcm4ceph-1.1.0-dev</finalName>
             </configuration>
           </plugin>
         </plugins>
@@ -58,7 +58,7 @@
               <descriptors>
                 <descriptor>src/assemble/src.xml</descriptor>
               </descriptors>
-              <finalName>dcm4ceph-1.0.0</finalName>
+              <finalName>dcm4ceph-1.1.0-dev</finalName>
             </configuration>
           </plugin>
         </plugins>
@@ -74,7 +74,7 @@
               <descriptors>
                 <descriptor>src/assemble/api.xml</descriptor>
               </descriptors>
-              <finalName>dcm4ceph-1.0.0</finalName>
+              <finalName>dcm4ceph-1.1.0-dev</finalName>
             </configuration>
           </plugin>
         </plugins>
