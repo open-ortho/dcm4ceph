@@ -1,9 +1,5 @@
 package org.antoniomagni.dcm4ceph.core;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-
 public class LocaleTest {
 
 	/**

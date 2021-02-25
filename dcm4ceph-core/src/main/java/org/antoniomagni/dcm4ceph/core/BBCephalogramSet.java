@@ -33,7 +33,6 @@ import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
 import org.dcm4che2.io.DicomInputStream;
 import org.dcm4che2.io.StopTagInputHandler;
-import org.dcm4che2.iod.module.spatial.FiducialSet;
 import org.dcm4che2.media.ApplicationProfile;
 import org.dcm4che2.media.BasicApplicationProfile;
 import org.dcm4che2.media.DicomDirReader;
@@ -257,6 +256,7 @@ public class BBCephalogramSet {
         DicomInputStream in = new DicomInputStream(f);
         in.setHandler(new StopTagInputHandler(Tag.PixelData));
         DicomObject dcmobj = in.readDicomObject();
+        in.close();
         DicomObject patrec = ap.makePatientDirectoryRecord(dcmobj);
         DicomObject styrec = ap.makeStudyDirectoryRecord(dcmobj);
         DicomObject serrec = ap.makeSeriesDirectoryRecord(dcmobj);

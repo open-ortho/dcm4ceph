@@ -2,7 +2,6 @@ package org.antoniomagni.dcm4ceph.core;
 
 import java.io.File;
 
-import org.antoniomagni.dcm4ceph.core.BBCephalogramSet;
 
 /**
  *

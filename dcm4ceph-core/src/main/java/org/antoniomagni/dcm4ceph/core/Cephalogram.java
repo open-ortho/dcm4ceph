@@ -34,11 +34,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Properties;
 
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 
 import org.antoniomagni.dcm4ceph.util.DcmUtils;
@@ -205,7 +202,7 @@ public class Cephalogram extends DXImage {
     /**
      * Prepare object for writing.
      * <p>
-     * This method sets the various dicom attributes that are specific to this
+     * This method sets the various DICOM attributes that are specific to this
      * Cephalogram instance.
      *
      * @see #setFromProperties(Properties)

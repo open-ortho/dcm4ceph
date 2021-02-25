@@ -589,13 +589,13 @@ public class SBFiducialSet extends SpatialFiducials {
         if (fiducialsProperties != null)
             fidprop.putAll(fiducialsProperties);
 
-        setD12(new Float(fidprop.getProperty("d12")).floatValue());
-        setD23(new Float(fidprop.getProperty("d23")).floatValue());
-        setD34(new Float(fidprop.getProperty("d34")).floatValue());
-        setD14(new Float(fidprop.getProperty("d14")).floatValue());
-        setD13(new Float(fidprop.getProperty("d13")).floatValue());
-        setD24(new Float(fidprop.getProperty("d24")).floatValue());
-        setDpi(new Integer(fidprop.getProperty("dpi")).intValue());
+        setD12(Float.parseFloat(fidprop.getProperty("d12")));
+        setD23(Float.parseFloat(fidprop.getProperty("d23")));
+        setD34(Float.parseFloat(fidprop.getProperty("d34")));
+        setD14(Float.parseFloat(fidprop.getProperty("d14")));
+        setD13(Float.parseFloat(fidprop.getProperty("d13")));
+        setD24(Float.parseFloat(fidprop.getProperty("d24")));
+        setDpi(Integer.parseInt(fidprop.getProperty("dpi")));
 
         computeCoordinates();
 
