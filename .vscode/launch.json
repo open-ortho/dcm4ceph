@@ -1,0 +1,63 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "Launch App",
+            "request": "launch",
+            "mainClass": "org.antoniomagni.dcm4ceph.core.App",
+            "projectName": "dcm4ceph-core"
+        },
+        {
+            "type": "java",
+            "name": "Launch CephalogramTest",
+            "request": "launch",
+            "mainClass": "org.antoniomagni.dcm4ceph.core.CephalogramTest",
+            "projectName": "dcm4ceph-core"
+        },
+        {
+            "type": "java",
+            "name": "Launch ImageTest",
+            "request": "launch",
+            "mainClass": "org.antoniomagni.dcm4ceph.core.ImageTest",
+            "projectName": "dcm4ceph-core"
+        },
+        {
+            "type": "java",
+            "name": "Launch LocaleTest",
+            "request": "launch",
+            "mainClass": "org.antoniomagni.dcm4ceph.core.LocaleTest",
+            "projectName": "dcm4ceph-core"
+        },
+        {
+            "type": "java",
+            "name": "Launch ImageInfo",
+            "request": "launch",
+            "mainClass": "org.devlib.schmidt.imageinfo.ImageInfo",
+            "projectName": "dcm4ceph-core"
+        },
+        {
+            "type": "java",
+            "name": "Launch Ceph2DCM",
+            "request": "launch",
+            "mainClass": "org.antoniomagni.dcm4ceph.tool.ceph2dicomdir.Ceph2DCM",
+            "projectName": "dcm4ceph-tool-ceph2dicomdir"
+        },
+        {
+            "type": "java",
+            "name": "Launch Ceph2DICOMDIR",
+            "request": "launch",
+            "mainClass": "org.antoniomagni.dcm4ceph.tool.ceph2dicomdir.Ceph2DICOMDIR",
+            "projectName": "dcm4ceph-tool-ceph2dicomdir"
+        }
+    ]
+}

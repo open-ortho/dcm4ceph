@@ -1,6 +1,13 @@
 package org.antoniomagni.dcm4ceph.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
+
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -10,10 +17,21 @@ import java.io.File;
  */
 public class CephalogramTest {
 
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
+    @Test
+    void readTiffPixel() {
+		String inputFile;
+		int[] rgb = new int[3];
+		inputFile = "/Users/Shared/radiographs/2021-02-24-0001.tif";
+		PlanarImage image = JAI.create("fileload", inputFile);
+		rgb = image.getData().getPixel(100, 10, rgb);
+		for (int i = 0; i < rgb.length; i++){
+			System.out.println(rgb[i] + ",");
+		}
+        assertEquals(1, rgb);
+    }
+
+    void testFiducials() {
+        String[] args = {"1","2","3"};
 
         File cephfile1 = new File(args[0]);
         File cephfile2 = new File(args[1]);
