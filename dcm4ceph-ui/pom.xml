@@ -3,13 +3,13 @@
   <parent>
     <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
-    <version>1.0.0</version>
+    <version>0.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-ui</artifactId>
   <name>dcm4ceph User Interfaces</name>
-  <version>1.0.0</version>
+  <version>0.1.0</version>
   <url>http://dcm4ceph.antoniomagni.org</url>
   <packaging>pom</packaging>
 </project>
