@@ -22,37 +22,47 @@
  *
  */
 
-package org.antoniomagni.dcm4ceph.tool.ceph2dicomdir;
-
-import java.io.File;
-
-import org.antoniomagni.dcm4ceph.core.Cephalogram;
+package org.antoniomagni.dcm4ceph.core;
 
 /**
- * @author Antonio Magni <dcm4ceph@antoniomagni.org>
+ * @author afm
  *
  */
-public class Ceph2DCM {
+public class FidPoint {
+    public float x, y;
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		File inputFile;
-		String outputDirectory;
+    public FidPoint(int x, int y) {
+        this.x = (float) x;
+        this.y = (float) y;
+    }
 
-		inputFile = new File(args[0]);
+    public FidPoint(String sxy) {
+        float[] fxy = coord2float(sxy);
+        this.x = fxy[0];
+        this.y = fxy[1];
+    }
 
-		if (args.length > 1)
-			outputDirectory = args[1];
-		else
-			outputDirectory = null;
+    float[] getFloatArray() {
+        float[] fa = new float[2];
+        fa[0] = x;
+        fa[1] = y;
+        return fa;
+    }
 
-		Cephalogram ceph = new Cephalogram(inputFile);
-		if (outputDirectory != null)
-			ceph.writeDCM(outputDirectory, null);
-		else
-			ceph.writeDCM();
-	}
+    /**
+     * Convert "x,y" into a float[].
+     *
+     * @param coord
+     * @return
+     */
+    public static float[] coord2float(String coord) {
+        String[] coords = coord.split(",");
+        if (coords.length != 2)
+            throw new StringIndexOutOfBoundsException();
+        float[] fcs = new float[2];
+        fcs[0] = Float.parseFloat(coords[0]);
+        fcs[1] = Float.parseFloat(coords[1]);
+        return fcs;
+    }
 
 }

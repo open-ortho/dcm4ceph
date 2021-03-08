@@ -2,13 +2,13 @@
   <parent>
     <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-site</artifactId>
   <name>Web site</name>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <url>http://maven.apache.org/maven2</url>
   <inceptionYear>2001</inceptionYear>
   <build>
