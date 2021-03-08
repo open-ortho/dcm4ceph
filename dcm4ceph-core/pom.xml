@@ -2,11 +2,7 @@
   <parent>
     <artifactId>dcm4ceph</artifactId>
     <groupId>org.antoniomagni.dcm4ceph</groupId>
-<<<<<<< HEAD
-    <version>0.1.0</version>
-=======
     <version>0.1.1</version>
->>>>>>> release/0.1.1
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.antoniomagni.dcm4ceph</groupId>
