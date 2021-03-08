@@ -56,7 +56,7 @@ packages will be in `target/`
 
 If you compiled a dist package, you can unpack it and run the scripts inside:
 
-    unzip dcm4ceph-dist/target/dcm4ceph-1.1.0-dev-bin.zip
-    cd dcm4ceph-1.1.0-dev/bin/
+    unzip dcm4ceph-dist/target/dcm4ceph-0.1.1-bin.zip
+    cd dcm4ceph-0.1.1/bin/
     ./ceph2dcm -h
     ./ceph2dcmdir -h

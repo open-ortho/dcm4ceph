@@ -5,7 +5,7 @@
 ##                                                                          ##
 ### ====================================================================== ###
 
-VERSION="1.1.0-dev"
+VERSION="0.1.1"
 
 MAIN_JAR=dcm4ceph-tool-ceph2dicomdir-${VERSION}.jar
 
