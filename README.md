@@ -1,42 +1,62 @@
 # dcm4ceph
 
-I think the best way to explain how things work is with shell scripts. Take a
-look at the shell scripts in bin/. There is one to build source and binary
-packages, and one to deploy the bins to my web site. They must be executed from
-the bin/ folder.
+WARNING: THIS RELEASE CONTAINS MANY BUGS AND IS NOT PRODUCTION READY
 
-However, I have written out some information.
+Convert Cephalograms from JPEG to DICOM. Cephalograms are 2D radiographs of
+the cranium, taken by following standards which allow providers to take
+measurements and make clinical decisions from them.
 
-## Assembling binary package
+Encapsulates JPEG files into DICOM files, using DICOM tags appropriate for
+postero-anterior and latero-lateral cephalograms, as used by the orthodontic
+community.
 
-If you are not familiar with maven, these guidelines will get you started.
+## Use Case
 
-Plese note: maven has some issues. I wasted a whole bunch of time with it. For
-this reason, you will have to use an older maven version (2.0.2) to assemble the
-distribution binary package, and a newer one for building the distribution
-source packages. The older version is not 100% compatible with the newer
-version, which has a bug when assembling binary packages or recurrent projects
-(i.e. of a module that is another pom package).
+Many orthodontic providers might still have a large collection of cephalogram which have not been taked with DICOM-enabled radiographic equipment. These usually come from analog equipment, and are then scanned. The goal of this tool is to provide a way to convert these into DICOM making use the proper DICOM tags and relationships.
 
-1. Download and install maven 2.0.2 (<== !!! 2 not 4) (http://maven.apache.org)
+## Features
 
-2. run `mvn install` in the root directory of the source code.
+* Read metadata from `.properties` file.
+* Provides a way to store "Bolton-Brush Corner Fiducials" into DICOM Spatial Fiducials.
+* Store lateral Ceph with frontal Ceph and corner fiducials into same Study.
 
-3. run `mvn assembly:assembly -P bin` in dcm4ceph-dist directory. You will find
-packages waiting for you in `dcm4ceph-dist/target/`
+## Known issues in this version
+
+* Output DCM files fail to validate against David Clunie's DICOM Validator `dciodvfy`
+* No TIFF or PNG support. Only JPEG is supported.
+* Incorecct usage of DX Image IOD. These cephalograms should not be stored as DX Image, but as SC (Secondary Capture), because this is what they really are.
+
+## Helper scripts
+
+Use `make.sh` to buid, test and deploy.
+
+## Building
+
+Usuall, you should just be able to run
+
+    ./make.sh all
+
+### Building binary package
+
+    ./make.sh dist
+
+packages will be in `dcm4ceph-dist/target/`
 
 NB: I have purposely left the profiles in dcm4ceph-dist/pom.xml so I would
 remember how to use them. The dist package will be deprecated, once the maven
 bugs are adressed and a new maven version is released.
 
-## Assembling source package
+### Assembling source package
 
-1. Download and install maven 2.0.4 (<== !!! 4 not 2) (http://maven.apache.org)
+    ./make.sh src
 
-2. Run `mvn assembly:assembly` directly in the root of the source tree. packages
-will be in `target/`
+packages will be in `target/`
 
 ## Running
 
-In `bin/` you will find scripts to execute the classes in `lib/`. Just run them, and
-see what happens.
+If you compiled a dist package, you can unpack it and run the scripts inside:
+
+    unzip dcm4ceph-dist/target/dcm4ceph-0.1.1-bin.zip
+    cd dcm4ceph-0.1.1/bin/
+    ./ceph2dcm -h
+    ./ceph2dcmdir -h
