@@ -6,6 +6,11 @@ clean() {
     echo "Cleaned all targets."
 }
 
+src() {
+    echo "Building src packages..."
+    mvn assembly:assembly
+}
+
 build() {
     echo "Building..."
     mvn install || exit
@@ -38,6 +43,10 @@ build)
     ;;
 deploy)
     deploy
+    exit
+    ;;
+src)
+    src
     exit
     ;;
 all)
