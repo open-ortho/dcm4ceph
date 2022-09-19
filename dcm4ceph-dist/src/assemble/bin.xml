@@ -1,15 +1,18 @@
 <assembly>
   <id>bin</id>
   <formats>
+    <format>jar</format>
     <format>tar.gz</format>
     <format>tar.bz2</format>
     <format>zip</format>
+    <format>dir</format>
   </formats>
   <fileSets>
     <fileSet>
       <directory>../dcm4ceph-tool/dcm4ceph-tool-ceph2dicomdir/src/bin</directory>
       <includes>
         <include>*.bat</include>
+        <include>*.cmd</include>
       </includes>
       <lineEnding>dos</lineEnding>
       <outputDirectory>bin</outputDirectory>
@@ -18,6 +21,7 @@
       <directory>../dcm4ceph-tool/dcm4ceph-tool-ceph2dicomdir/src/bin</directory>
       <excludes>
         <exclude>*.bat</exclude>
+        <exclude>*.cmd</exclude>
       </excludes>
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
@@ -38,17 +42,17 @@
       <outputDirectory>lib</outputDirectory>
       <scope>runtime</scope>
       <excludes>
-        <exclude>checkstyle:checkstyle</exclude>
-        <exclude>com.sun.jmx:jmxri</exclude>
-        <exclude>com.sun.jdmk:jmxtools</exclude>
         <exclude>commons-lang:commons-lang</exclude>
         <exclude>commons-logging:commons-logging</exclude>
+        <exclude>junit:junit</exclude>
+        <!-- <exclude>checkstyle:checkstyle</exclude>
+        <exclude>com.sun.jmx:jmxri</exclude>
+        <exclude>com.sun.jdmk:jmxtools</exclude>
         <exclude>javax.activation:activation</exclude>
         <exclude>javax.jms:jms</exclude>
         <exclude>javax.mail:mail</exclude>
-        <exclude>junit:junit</exclude>
         <exclude>xerces:xerces</exclude>
-        <exclude>xerces:xercesImpl</exclude>
+        <exclude>xerces:xercesImpl</exclude> -->
       </excludes>
     </dependencySet>
   </dependencySets>
