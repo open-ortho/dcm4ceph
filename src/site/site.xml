@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project name="dcm4ceph">
   <bannerLeft>
     <name>DICOM for Cephalograms</name>
@@ -10,7 +10,7 @@
       <item name="Toni Magni" href="https://www.antoniomagni.com/" />
       <item name="PANIO" href="http://panio.antoniomagni.org/"/>
       <item name="dcm4che" href="http://dcm4che.sourceforge.net/"/>
-      <item name="portugu�s" href="pt_BR/index.html"/>
+      <item name="português" href="pt_BR/index.html"/>
     </links>
 
     <menu name="dcm4ceph">
