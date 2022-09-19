@@ -1,6 +1,6 @@
 /**
  * dcm4ceph, a DICOM library for digital cephalograms
- * Copyright (C) 2006  Antonio Magni
+ * Copyright (C) 2006  Toni Magni
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,9 +16,9 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  * 
- * Antonio Magni 
- * email: dcm4ceph@antoniomagni.org
- * website: http://dcm4ceph.antoniomagni.org
+ * Toni Magni 
+ * email: afm@case.edu
+ * website: https://github.com/open-ortho/dcm4ceph
  * 
  */
 

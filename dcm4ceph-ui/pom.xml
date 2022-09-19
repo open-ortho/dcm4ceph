@@ -10,6 +10,6 @@
   <artifactId>dcm4ceph-ui</artifactId>
   <name>dcm4ceph User Interfaces</name>
   <version>0.1.1</version>
-  <url>http://dcm4ceph.antoniomagni.org</url>
+  <url>https://github.com/open-ortho/dcm4ceph</url>
   <packaging>pom</packaging>
 </project>

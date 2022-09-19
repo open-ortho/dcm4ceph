@@ -3,14 +3,14 @@
   <bannerLeft>
     <name>DICOM for Cephalograms</name>
     <src>images/dcm4ceph-logo3a.png</src>
-    <href>http://dcm4ceph.antoniomagni.org/</href>
+    <href>https://github.com/open-ortho/dcm4ceph/</href>
   </bannerLeft>
   <body>
     <links>
-      <item name="Antonio Magni" href="http://www.antoniomagni.org/" />
+      <item name="Toni Magni" href="http://www.antoniomagni.org/" />
       <item name="PANIO" href="http://panio.antoniomagni.org/"/>
       <item name="dcm4che" href="http://dcm4che.sourceforge.net/"/>
-      <item name="português" href="pt_BR/index.html"/>
+      <item name="portuguï¿½s" href="pt_BR/index.html"/>
     </links>
 
     <menu name="General">

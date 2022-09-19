@@ -8,7 +8,7 @@
   <groupId>org.antoniomagni.dcm4ceph</groupId>
   <artifactId>dcm4ceph-core</artifactId>
   <name>Core Classes</name>
-  <url>http://dcm4ceph.antoniomagni.org/dcm4ceph-core</url>
+  <url>https://github.com/open-ortho/dcm4ceph/dcm4ceph-core</url>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
