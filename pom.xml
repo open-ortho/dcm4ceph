@@ -29,10 +29,28 @@
           </descriptors>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>org.antoniomagni.dcm4ceph.tool.ceph2dicomdir.Ceph2Dicom</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>20040117.000000</version>
+    </dependency>
     <dependency>
       <groupId>dcm4che</groupId>
       <artifactId>dcm4che-core</artifactId>
@@ -46,6 +64,10 @@
   </dependencies>
 
   <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo1.maven.org/maven2/</url>
+    </repository>
     <repository>
       <id>dcm4che</id>
       <url>https://www.dcm4che.org/maven2/</url>
@@ -102,8 +124,8 @@
       <name>Toni Magni</name>
       <email>afm@case.edu</email>
       <url>https://www.antoniomagni.com</url>
-      <organization>Universidade de Brasìlia</organization>
-      <organizationUrl>http://www.unb.br</organizationUrl>
+      <organization>Case Western Reserve University Department of Orthodontics</organization>
+      <organizationUrl>https://orthodontics.case.edu</organizationUrl>
       <roles>
         <role>Developer</role>
         <role>Documentation</role>
@@ -123,8 +145,8 @@
   </licenses>
 
   <organization>
-    <name>antoniomagni.org</name>
-    <url>https://www.antoniomagni.com</url>
+    <name>Case Western Reserve University Department of Orthodontics</name>
+    <url>https://orthodontics.case.edu</url>
   </organization>
 
   <scm>
