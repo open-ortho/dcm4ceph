@@ -32,13 +32,15 @@ Use `make.sh` to buid, test and deploy.
 
 ## Building
 
-Usuall, you should just be able to run
+Install Maven from https://maven.apache.org/download.cgi. 
 
-    ./make.sh all
+Then you should just be able to run
+
+    make all
 
 ### Building binary package
 
-    ./make.sh dist
+    make dist
 
 packages will be in `dcm4ceph-dist/target/`
 
@@ -48,7 +50,7 @@ bugs are adressed and a new maven version is released.
 
 ### Assembling source package
 
-    ./make.sh src
+    make src
 
 packages will be in `target/`
 

@@ -100,9 +100,9 @@
     <developer>
       <id>tinton</id>
       <name>Toni Magni</name>
-      <email>tinton@antoniomagni.org</email>
-      <url>http://www.antoniomagni.org</url>
-      <organization>Universidade de Bras��lia</organization>
+      <email>afm@case.edu</email>
+      <url>https://www.antoniomagni.com</url>
+      <organization>Universidade de Brasìlia</organization>
       <organizationUrl>http://www.unb.br</organizationUrl>
       <roles>
         <role>Developer</role>
@@ -124,7 +124,7 @@
 
   <organization>
     <name>antoniomagni.org</name>
-    <url>http://www.antoniomagni.org</url>
+    <url>https://www.antoniomagni.com</url>
   </organization>
 
   <scm>
