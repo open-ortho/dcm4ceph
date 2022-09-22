@@ -34,6 +34,7 @@ import java.util.Properties;
 import org.apache.commons.cli.*;
 
 import org.antoniomagni.dcm4ceph.core.BBCephalogramSet;
+import org.antoniomagni.dcm4ceph.core.Cephalogram;
 
 /**
  * @author afm
@@ -58,36 +59,68 @@ public class Ceph2Dicom {
 		// CommandLineParser parser = new DefaultParser();
 		CommandLineParser parser = new DefaultParser();
 
-		Option lateralfile = Option.builder("l")
-			.longOpt("lateralfile")
-			.argName("file")
-			.hasArg()
-			.desc("filename of latero-lateral cephalogram x-ray image.")
-			.build();
+		Option inputfile = Option.builder("i")
+				.longOpt("file")
+				.argName("file")
+				.hasArg()
+				.numberOfArgs(1)
+				.desc("Name of cephalogram x-ray image file.")
+				.build();
+		inputfile.setArgs(1);
+
+		Option fiducialfile = Option.builder("f")
+				.longOpt("fiducialfile")
+				.argName("file")
+				.optionalArg(true)
+				.numberOfArgs(1)
+				.desc("Name of fiducials punched on the x-ray file.")
+				.build();
+
+		Option outputdir = Option.builder("o")
+				.longOpt("outputdir")
+				.argName("directory")
+				.hasArg()
+				.desc("directory where to save DICOM into. Defaults to this one.")
+				.build();
 
 		Options options = new Options();
-		options.addOption("D", "dicomdir", false, "create DICOMDIR instead of flat .dcm file.");
-		options.addOption(lateralfile);
-		
-		options.addOption("p", "pafile", true, "filename of postero-anterior cephalogram x-ray image.");
-		options.addOption("f", "fiducialfile", true, "filename of fiducials punched on the x-ray image.");
+		options.addOption("B", "boltonset", false,
+				"create DICOMDIR of a Bolton Set with PA, Lateral, and Fiducial. Requires specifying --file twice: PA, Lateral and --fiducialfile.");
+		options.addOption(inputfile);
+		options.addOption(fiducialfile);
 
 		try {
 			CommandLine line = parser.parse(options, args);
-			File cephfile1 = new File(line.getOptionValue("lateralfile"));
-			File cephfile2 = new File(line.getOptionValue("pafile"));
-			File fidfile = new File(line.getOptionValue("fiducialfile"));
+			if (line.hasOption("boltonset")) {
+				System.out.println("Converting PA, Lateral and Fiducial Set to DICOMDIR.");
+				File cephfile1 = new File(line.getOptionValues(inputfile)[0]);
+				File cephfile2 = new File(line.getOptionValues(inputfile)[1]);
+				File fidfile = new File(line.getOptionValue(inputfile));
+				BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
+						fidfile);
 
-			BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
-					fidfile);
+				cephSet.writeDicomdir(new File(cephfile1.getParent() + File.separator
+						+ "BBcephset"));
 
-			cephSet.writeDicomdir(new File(cephfile1.getParent() + File.separator
-					+ "BBcephset"));
+			} else {
+				System.out.println("Converting single TIF file to DCM.");
+				String outputDirectory = null;
+				if (line.hasOption(outputdir))
+					outputDirectory = line.getOptionValue(outputdir);
+
+				Cephalogram ceph = new Cephalogram(new File(line.getOptionValue(inputfile)));
+				if (outputDirectory != null)
+					ceph.writeDCM(outputDirectory, null);
+				else
+					ceph.writeDCM();
+
+			}
 
 			// printDicomElements(FileUtils.getDCMFile(cephfile));
 
 		} catch (ParseException exp) {
 			System.err.println("ERR: Incorrect Arguments.");
+			System.err.println(exp);
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("ceph2dicom", options);
 		}
@@ -123,7 +156,7 @@ public class Ceph2Dicom {
 	private Properties makeProperties(String filename) {
 		try {
 			Properties p = new Properties();
-			p.load(Ceph2DICOMDIR.class.getResourceAsStream(filename));
+			p.load(Ceph2Dicom.class.getResourceAsStream(filename));
 			return p;
 		} catch (Exception e) {
 			e.printStackTrace();
