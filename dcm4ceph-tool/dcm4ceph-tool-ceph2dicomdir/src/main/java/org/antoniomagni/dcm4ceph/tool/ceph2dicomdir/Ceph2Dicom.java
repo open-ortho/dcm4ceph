@@ -31,13 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-// import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.*;
 
 import org.antoniomagni.dcm4ceph.core.BBCephalogramSet;
 
@@ -62,33 +56,41 @@ public class Ceph2Dicom {
 	 */
 	public static void main(String[] args) {
 		// CommandLineParser parser = new DefaultParser();
-		CommandLineParser parser = new GnuParser();
+		CommandLineParser parser = new DefaultParser();
+
+		Option lateralfile = Option.builder("l")
+			.longOpt("lateralfile")
+			.argName("file")
+			.hasArg()
+			.desc("filename of latero-lateral cephalogram x-ray image.")
+			.build();
 
 		Options options = new Options();
 		options.addOption("D", "dicomdir", false, "create DICOMDIR instead of flat .dcm file.");
-		options.addOption("l", "lateralfile", true, "filename of latero-lateral cephalogram x-ray image.");
+		options.addOption(lateralfile);
+		
 		options.addOption("p", "pafile", true, "filename of postero-anterior cephalogram x-ray image.");
 		options.addOption("f", "fiducialfile", true, "filename of fiducials punched on the x-ray image.");
 
-		// try {
-		// 	CommandLine line = parser.parse(options,args);
-		// }
-		// catch (ParseException exp) {
-		// 	HelpFormatter formatter = new HelpFormatter();
-		// 	formatter.printHelp("ceph2dicom", options);
-		// }
-		File cephfile1 = new File(args[0]);
-		File cephfile2 = new File(args[1]);
-		File fidfile = new File(args[2]);
+		try {
+			CommandLine line = parser.parse(options, args);
+			File cephfile1 = new File(line.getOptionValue("lateralfile"));
+			File cephfile2 = new File(line.getOptionValue("pafile"));
+			File fidfile = new File(line.getOptionValue("fiducialfile"));
 
-		BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
-				fidfile);
+			BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
+					fidfile);
 
-		cephSet.writeDicomdir(new File(cephfile1.getParent() + File.separator
-				+ "BBcephset"));
+			cephSet.writeDicomdir(new File(cephfile1.getParent() + File.separator
+					+ "BBcephset"));
 
-		// printDicomElements(FileUtils.getDCMFile(cephfile));
+			// printDicomElements(FileUtils.getDCMFile(cephfile));
 
+		} catch (ParseException exp) {
+			System.err.println("ERR: Incorrect Arguments.");
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("ceph2dicom", options);
+		}
 	}
 
 	private Properties loadConfiguration(File cfgFile) throws IOException {
