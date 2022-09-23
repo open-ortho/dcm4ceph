@@ -36,29 +36,8 @@ Install Maven from https://maven.apache.org/download.cgi.
 
 Then you should just be able to run
 
-    make all
-
-### Building binary package
-
-    make dist
-
-packages will be in `dcm4ceph-dist/target/`
-
-NB: I have purposely left the profiles in dcm4ceph-dist/pom.xml so I would
-remember how to use them. The dist package will be deprecated, once the maven
-bugs are adressed and a new maven version is released.
-
-### Assembling source package
-
-    make src
-
-packages will be in `target/`
+    mvn clean compile assembly:single
 
 ## Running
 
-If you compiled a dist package, you can unpack it and run the scripts inside:
-
-    unzip dcm4ceph-dist/target/dcm4ceph-0.1.1-bin.zip
-    cd dcm4ceph-0.1.1/bin/
-    ./ceph2dcm -h
-    ./ceph2dcmdir -h
+    java -jar dcm4ceph-tool\dcm4ceph-tool-ceph2dicomdir\target\dcm4ceph-tool-ceph2dicomdir-0.1.1-jar-with-dependencies.jar
