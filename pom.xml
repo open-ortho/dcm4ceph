@@ -13,8 +13,6 @@
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <modules>
-    <!--module>dcm4ceph-ui</module-->
-    <!--module>dcm4ceph-dist</module-->
     <module>dcm4ceph-core</module>
     <module>dcm4ceph-tool</module>
     <!--module>dcm4ceph-site</module-->
@@ -34,10 +32,6 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
-          <!-- <descriptors>
-            <descriptor>src/assemble/src.xml</descriptor>
-            <descriptor>src/assemble/bin.xml</descriptor>
-          </descriptors> -->
         </configuration>
       <executions>
         <execution>
@@ -49,20 +43,6 @@
         </execution>
       </executions>
       </plugin>
-      
-      <!-- <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.1</version>
-        <configuration>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <mainClass>org.open_ortho.dcm4ceph.tool.ceph2dicomdir.Ceph2Dicom</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin> -->
     </plugins>
   </build>
 
@@ -116,11 +96,6 @@
               <report>dependencies</report>
               <report>project-team</report>
               <report>license</report>
-              <!--report>mailing-list</report>
-				<report>cim</report>
-				<report>issue-tracking</report>
-				<report>license</report>
-				<report>scm</report-->
             </reports>
           </reportSet>
         </reportSets>
@@ -153,8 +128,8 @@
 
   <licenses>
     <license>
-      <name>GNU Lesser General Public License</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
       <distribution>manual</distribution>
       <comments />
     </license>
