@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.antoniomagni.dcm4ceph</groupId>
+  <groupId>org.open_ortho.dcm4ceph</groupId>
   <artifactId>dcm4ceph</artifactId>
   <version>0.1.1</version>
   <description>dcm4ceph is a set of utilities that aids the administration of cephalogram images in DICOM format.</description>
   <name>DICOM for Cephalograms</name>
   <packaging>pom</packaging>
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
@@ -27,7 +28,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>org.antoniomagni.dcm4ceph.tool.ceph2dicomdir.Ceph2Dicom</mainClass>
+              <mainClass>org.open_ortho.dcm4ceph.tool.ceph2dicomdir.Ceph2Dicom</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
@@ -57,7 +58,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
-              <mainClass>org.antoniomagni.dcm4ceph.tool.ceph2dicomdir.Ceph2Dicom</mainClass>
+              <mainClass>org.open_ortho.dcm4ceph.tool.ceph2dicomdir.Ceph2Dicom</mainClass>
             </manifest>
           </archive>
         </configuration>

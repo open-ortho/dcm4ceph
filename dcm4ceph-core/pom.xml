@@ -1,11 +1,11 @@
 <?xml version="1.0"?><project>
   <parent>
     <artifactId>dcm4ceph</artifactId>
-    <groupId>org.antoniomagni.dcm4ceph</groupId>
+    <groupId>org.open_ortho.dcm4ceph</groupId>
     <version>0.1.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.antoniomagni.dcm4ceph</groupId>
+  <groupId>org.open_ortho.dcm4ceph</groupId>
   <artifactId>dcm4ceph-core</artifactId>
   <name>Core Classes</name>
   <url>https://github.com/open-ortho/dcm4ceph/dcm4ceph-core</url>
