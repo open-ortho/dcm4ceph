@@ -5,7 +5,7 @@
 ##                                                                          ##
 ### ====================================================================== ###
 
-MAIN_CLASS=org.antoniomagni.dcm4ceph.tool.ceph2dicomdir.Ceph2DCM
+MAIN_CLASS=org.open_ortho.dcm4ceph.tool.ceph2dicomdir.Ceph2DCM
 
 . initvars.sh
 
