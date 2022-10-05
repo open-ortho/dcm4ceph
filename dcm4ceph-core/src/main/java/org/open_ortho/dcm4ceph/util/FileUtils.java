@@ -140,11 +140,10 @@ public class FileUtils {
      */
     public static Properties loadProperties(Class c, String conffile) {
         Log.info("Loading Properties file " + conffile);
-        URLClassLoader cl = (URLClassLoader) c.getClassLoader();
 
         Properties p = new Properties();
 
-        URL fileURL = cl.findResource(conffile);
+        URL fileURL = ClassLoader.getSystemResource(conffile);
         if (fileURL == null) {
             Log.warn("Could not find file " + conffile + " in ClassPath.");
         } else {
