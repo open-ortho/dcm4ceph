@@ -271,6 +271,8 @@ public class Cephalogram extends DXImage {
         // Set Series date and time to Study date and time.
         getDXSeriesModule().setSeriesDateTime(getGeneralStudyModule().getStudyDateTime());
 
+        getPatientModule().setEthnicGroup(cephprops.getProperty("ethnicGroup"));
+
         getDicomObject().putString(Tag.PatientAge,VR.AS,cephprops.getProperty("patientAge"));
         getPatientModule().setPatientSex(cephprops.getProperty("patientSex"));
 
