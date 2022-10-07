@@ -132,6 +132,8 @@ public class Cephalogram extends DXImage {
         getDXSeriesModule().setModality(Modality.DX);
         if (this.getSeriesUID() == null)
             this.setSeriesUID(makeInstanceUID());
+
+        // Set a default series date of now, which will be changed later.
         getDXSeriesModule().setSeriesDateTime(new Date());
         getDXSeriesModule().setPresentationIntentType(
                 PresentationIntentType.PROCESSING);
@@ -257,14 +259,19 @@ public class Cephalogram extends DXImage {
         }
 
         try {
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             getGeneralStudyModule().setStudyDateTime(
-                    DateFormat.getDateInstance().parse(
+                    formatter.parse(
                             cephprops.getProperty("studyDate") + " "
                                     + cephprops.getProperty("studyTime")));
         } catch (ParseException e) {
-            // e.printStackTrace();
+            e.printStackTrace();
             getGeneralStudyModule().setStudyDateTime(new Date());
         }
+        // Set Series date and time to Study date and time.
+        getDXSeriesModule().setSeriesDateTime(getGeneralStudyModule().getStudyDateTime());
+
+        getDicomObject().putString(Tag.PatientAge,VR.AS,cephprops.getProperty("patientAge"));
         getPatientModule().setPatientSex(cephprops.getProperty("patientSex"));
 
         getGeneralStudyModule().setReferringPhysiciansName(
@@ -343,7 +350,7 @@ public class Cephalogram extends DXImage {
      * cephalogram is part of.
      *
      * @param instanceNumber
-     *            The instanceNumber to set.
+     *                       The instanceNumber to set.
      */
     public void setStudyUID(String uid) {
         getGeneralStudyModule().setStudyInstanceUID(uid);
@@ -386,7 +393,7 @@ public class Cephalogram extends DXImage {
      * cephalogram is part of.
      *
      * @param instanceNumber
-     *            The instanceNumber to set.
+     *                       The instanceNumber to set.
      */
     public void setSeriesUID(String instanceNumber) {
         getDXSeriesModule().setSeriesInstanceUID(instanceNumber);
@@ -424,7 +431,7 @@ public class Cephalogram extends DXImage {
      * at an image
      *
      * @param patientOrientation
-     *            The patientOrientation to set.
+     *                           The patientOrientation to set.
      */
     public void setPatientOrientation(String patientOrientation) {
         this.patientOrientation = patientOrientation;
@@ -454,7 +461,7 @@ public class Cephalogram extends DXImage {
     //
     /**
      * @param imageFile
-     *            The imageFile to set.
+     *                  The imageFile to set.
      */
     public void setImageFile(File file) {
         this.imageFile = file;
@@ -665,11 +672,11 @@ public class Cephalogram extends DXImage {
      * <p>
      *
      * @param path
-     *            The new directory where to store the filename.
+     *                 The new directory where to store the filename.
      * @param filename
-     *            The new filename of the file. Can be {@code null} in which
-     *            case the the value returne by {@link #getDCMFileName()} will
-     *            be used.
+     *                 The new filename of the file. Can be {@code null} in which
+     *                 case the the value returne by {@link #getDCMFileName()} will
+     *                 be used.
      * @return The {@link File} this object was written to, or null if the
      *         object was not written because of its invalidiy
      */
@@ -686,7 +693,7 @@ public class Cephalogram extends DXImage {
      *
      *
      * @param dcmFile
-     *            The output file.
+     *                The output file.
      *
      * @return The {@link File} this object was written to, or null if the
      *         object was not written because of its invalidiy
