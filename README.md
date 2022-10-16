@@ -79,6 +79,10 @@ After build you may also find `./dcm4ceph-dist/dcm4ceph.jar` artifact packaged a
     cd ./dcm4ceph-dist
     java -jar dcm4ceph.jar -file ../dcm4ceph-sampledata/B1893F12.jpg
 
+#### Javadoc
+
+Javadoc of the core library is hosted on [github pages](https://open-ortho.github.io/dcm4ceph/apidocs/)
+
 
 
     
