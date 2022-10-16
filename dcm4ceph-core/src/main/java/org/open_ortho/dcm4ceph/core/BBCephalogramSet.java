@@ -110,7 +110,7 @@ public class BBCephalogramSet {
      *         .get(1)), new File((String) argList.get(2)));
      * </pre>
      *
-     * @param argList
+     * @param argList args
      */
     public BBCephalogramSet(List argList) {
         this(new File((String) argList.get(0)), new File((String) argList
@@ -182,7 +182,7 @@ public class BBCephalogramSet {
     /**
      * Write out this cephalogram set to a directory.
      *
-     * @param rootdir
+     * @param rootdir directory File reference
      */
     public void writeCephs(File rootdir) {
         File ceph1dir = new File(rootdir, "ceph1");

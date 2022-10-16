@@ -5,7 +5,7 @@ import java.io.File;
 
 /**
  *
- * @author Toni Magni <afm@case.edu>
+ * @author Toni Magni &lt;afm@case.edu&gt;
  *
  */
 public class CephalogramTest {

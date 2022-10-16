@@ -131,7 +131,7 @@ public class SBFiducialSet extends SpatialFiducials {
      * @param uids
      *            The SOP Instance UID of the referring image.
      * 
-     * @param properties
+     * @param fidprop
      *            The fiducial set information data.
      */
     public SBFiducialSet(String[] uids, Properties fidprop) {
@@ -176,8 +176,6 @@ public class SBFiducialSet extends SpatialFiducials {
      * Set attributes that are specific for all fiducial sets. Instance specific
      * values are set by {@link #prepare()}.
      * 
-     * @param dcmobj
-     * @return
      */
     public void init() {
         super.init();
@@ -226,7 +224,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the top left fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF1(FidPoint p) {
         this.f1 = p;
@@ -235,7 +233,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the top right fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF2(FidPoint p) {
         this.f2 = p;
@@ -244,7 +242,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the bottom right fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF3(FidPoint p) {
         this.f3 = p;
@@ -253,7 +251,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the bottom left fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF4(FidPoint p) {
         this.f4 = p;
@@ -591,7 +589,7 @@ public class SBFiducialSet extends SpatialFiducials {
     }
 
     private Properties loadDefaults() {
-        return FileUtils.loadProperties(this.getClass(),
+        return FileUtils.loadProperties(
                 "fiducial_defaults.properties");
     }
 
