@@ -11,7 +11,7 @@
 package org.open_ortho.dcm4ceph.util;
 
 /**
- * @author Toni Magni <afm@case.edu>
+ * @author Toni Magni &lt;afm@case.edu&gt;
  *
  */
 public class Log {

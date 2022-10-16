@@ -22,6 +22,10 @@ public class FidPoint {
         this.y = (float) y;
     }
 
+    /*
+     * Constructor from string
+     * @param sxy "x,y" "1.0;2.0" string representing coords
+     */
     public FidPoint(String sxy) {
         float[] fxy = coord2float(sxy);
         this.x = fxy[0];
@@ -38,8 +42,8 @@ public class FidPoint {
     /**
      * Convert "x,y" into a float[].
      *
-     * @param coord
-     * @return
+     * @param coord "x,y" string ie "1.0,2.0"
+     * @return split coords to float array
      */
     public static float[] coord2float(String coord) {
         String[] coords = coord.split(",");
