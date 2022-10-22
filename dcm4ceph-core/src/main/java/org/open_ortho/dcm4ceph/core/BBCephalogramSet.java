@@ -10,6 +10,7 @@
 package org.open_ortho.dcm4ceph.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
@@ -66,7 +67,7 @@ public class BBCephalogramSet {
      * @param fiducialFile
      *            Fiducial distance information
      */
-    public BBCephalogramSet(File ceph1File, File ceph2File, File fiducialFile) {
+    public BBCephalogramSet(File ceph1File, File ceph2File, File fiducialFile) throws FileNotFoundException {
         ceph1 = new Cephalogram(ceph1File);
         ceph2 = new Cephalogram(ceph2File);
 
@@ -112,7 +113,7 @@ public class BBCephalogramSet {
      *
      * @param argList args
      */
-    public BBCephalogramSet(List argList) {
+    public BBCephalogramSet(List argList) throws FileNotFoundException {
         this(new File((String) argList.get(0)), new File((String) argList
                 .get(1)), new File((String) argList.get(2)));
     }
@@ -256,13 +257,15 @@ public class BBCephalogramSet {
         return 1;
     }
 
-    public void writeCeph1Dcm() {
-        if (ceph1 != null)
+    public void writeCeph1Dcm() throws IOException {
+        if (ceph1 != null) {
             ceph1.writeDCM();
+        }
     }
 
-    public void writeCeph2Dcm() {
-        if (ceph2 != null)
+    public void writeCeph2Dcm() throws IOException {
+        if (ceph2 != null) {
             ceph2.writeDCM();
+        }
     }
 }

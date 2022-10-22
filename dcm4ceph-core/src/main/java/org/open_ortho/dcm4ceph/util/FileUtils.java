@@ -43,12 +43,7 @@ public class FileUtils {
      * @return File reference with replaced extension
      */
     public static File getDCMFile(File file) {
-        try {
-            return getFileNewExtension(file, "dcm");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return getFileNewExtension(file, "dcm");
     }
 
     /**
@@ -65,12 +60,7 @@ public class FileUtils {
      * @return filename with replaced extension to .dcm
      */
     public static String getDCMFileName(File file) {
-        try {
-            return getFileNewExtension(file, "dcm").getName();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return getFileNewExtension(file, "dcm").getName();
     }
 
     /**
@@ -88,12 +78,7 @@ public class FileUtils {
      * @return same file name, but replaced extension
      */
     public static File getPropertiesFile(File file) {
-        try {
-            return FileUtils.getFileNewExtension(file, "properties");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return FileUtils.getFileNewExtension(file, "properties");
     }
 
     /**
@@ -105,16 +90,8 @@ public class FileUtils {
      * @param file original file
      * @param ext new extension
      * @return File reference with replaced extension
-     * @throws FileNotFoundException when no original file found
      */
-    public static File getFileNewExtension(File file, String ext)
-            throws FileNotFoundException {
-        if (!file.canRead()) {
-            throw new FileNotFoundException(
-                    "Can't read input Cephalogram Image file: "
-                            + file.getAbsolutePath());
-        }
-
+    public static File getFileNewExtension(File file, String ext) {
         if (!ext.startsWith(".")) {
             ext = "." + ext;
         }
@@ -176,11 +153,6 @@ public class FileUtils {
             return props;
         } catch (IOException e) {
             e.printStackTrace();
-            Log.warn("Cannot read from file " + filename.toPath() + ".\n" +
-                    "Using ceph_default.properties.\n" +
-                    "Please use 2 files as input: %name%.jpg and %name%.properties \n" +
-                    "The DICOM output file will be created with default properties.\n" +
-                    "You may find example .properties file here: https://github.com/open-ortho/dcm4ceph/blob/master/dcm4ceph-sampledata/B1893F12.properties ");
             return null;
         }
     }

@@ -129,6 +129,11 @@ public class Ceph2Dicom {
 			Log.err("Could not find input file. Exiting.");
 			System.exit(1);
 			return;
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.err("IOException occured. Exiting.");
+			System.exit(1);
+			return;
 		}
 	}
 

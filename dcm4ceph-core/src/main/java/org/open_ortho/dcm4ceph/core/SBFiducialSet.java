@@ -36,6 +36,7 @@ import org.dcm4che2.iod.validation.ValidationResult;
 import org.dcm4che2.iod.value.Modality;
 import org.dcm4che2.iod.value.ShapeType;
 import org.dcm4che2.util.UIDUtils;
+import org.open_ortho.dcm4ceph.util.Log;
 
 /**
  * Reprsents a set of SB corner fiducials in DICOM format.
@@ -611,9 +612,9 @@ public class SBFiducialSet extends SpatialFiducials {
      *         object was not written because of its invalidiy
      */
     public File writeDCM(String path, String filename) {
-        if (filename == null)
+        if (filename == null) {
             filename = FileUtils.getDCMFileName(this.propertiesFile);
-
+        }
         return writeDCM(new File(path + File.separator + filename));
     }
 
@@ -636,7 +637,7 @@ public class SBFiducialSet extends SpatialFiducials {
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             DicomOutputStream dos = new DicomOutputStream(bos);
 
-            System.out.println("Writing to file " + dcmFile.getCanonicalPath());
+            Log.info("Writing to file " + dcmFile.getCanonicalPath());
 
             dos.writeDicomFile(dcmobj);
             // dos.writeHeader(Tag.PixelData, VR.OB, -1);
