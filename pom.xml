@@ -26,20 +26,6 @@
     <!-- Adding dependencies to the parent pom is rarely necessary -->
   </dependencies>
 
-  <distributionManagement>
-    <repository>
-      <id>brillig.org</id>
-      <name>dcm4ceph Repository</name>
-      <url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph/m2repository</url>
-    </repository>
-
-    <site>
-      <id>brillig.org</id>
-      <name>dcm4ceph web site home</name>
-      <url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph</url>
-    </site>
-  </distributionManagement>
-
   <reporting>
     <plugins>
     </plugins>
