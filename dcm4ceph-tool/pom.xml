@@ -4,7 +4,7 @@
   <artifactId>dcm4ceph-tool</artifactId>
   <name>dcm4ceph-tool</name>
   <version>1.0.0</version>
-  <url>http://dcm4cepch.antoniomagni.org</url>
+  <url>https://github.com/open-ortho/dcm4ceph/</url>
   <dependencies>
       <dependency>
       <groupId>org.open_ortho.dcm4ceph</groupId>
