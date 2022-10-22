@@ -15,7 +15,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.Properties;
 
 /**
@@ -169,20 +171,18 @@ public class FileUtils {
     public static Properties loadProperties(File filename) {
         Log.info("Loading Properties file " + filename);
         Properties props = new Properties();
-
-        if (!filename.canRead()) {
-            Log.warn("Cannot read from file " + filename + ".");
-        } else {
-            try {
-                props.load(new FileInputStream(filename));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try (InputStream is = Files.newInputStream(filename.toPath())) {
+            props.load(is);
+            return props;
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.warn("Cannot read from file " + filename.toPath() + ".\n" +
+                    "Using ceph_default.properties.\n" +
+                    "Please use 2 files as input: %name%.jpg and %name%.properties \n" +
+                    "The DICOM output file will be created with default properties.\n" +
+                    "You may find example .properties file here: https://github.com/open-ortho/dcm4ceph/blob/master/dcm4ceph-sampledata/B1893F12.properties ");
+            return null;
         }
-        return props;
-
     }
 
 }
