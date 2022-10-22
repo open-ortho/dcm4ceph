@@ -70,6 +70,8 @@ public class Cephalogram extends DXImage {
      */
     private static final String DEFAULT_CHARSET = "ISO_IR 100";
 
+    private static final String transferSyntax = UID.JPEGBaseline1;
+
     private static final double mmPerInch = 25.4; // 25.4 mm to an inch.
 
     private String patientOrientation;
@@ -228,7 +230,6 @@ public class Cephalogram extends DXImage {
         DcmUtils.ensureUID(dcmobj, Tag.SOPInstanceUID);
 
         dcmobj.putString(Tag.SpecificCharacterSet, VR.CS, DEFAULT_CHARSET);
-        String transferSyntax = UID.JPEGBaseline1;
         dcmobj.initFileMetaInformation(transferSyntax);
     }
 
