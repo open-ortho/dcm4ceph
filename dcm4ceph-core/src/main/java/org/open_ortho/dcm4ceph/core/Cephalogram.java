@@ -97,10 +97,6 @@ public class Cephalogram extends DXImage {
             ImageTypeValue3.NULL };
 
     public Cephalogram(File cephFile) throws FileNotFoundException {
-        this(cephFile, null);
-    }
-
-    public Cephalogram(File cephFile, File configFile) throws FileNotFoundException {
         super(new BasicDicomObject());
 
         if (!cephFile.exists()) {
@@ -110,15 +106,18 @@ public class Cephalogram extends DXImage {
 
         initDximage();
 
-        if (configFile == null) {
-            configFile = FileUtils.getPropertiesFile(cephFile);
-        }
+        // use .properties file with same name as image, but swapped extension
+        // the .properties file existence is mandatory
+        File configFile = FileUtils.getPropertiesFile(cephFile);
         Properties configLoaded = FileUtils.loadProperties(configFile);
         if (configLoaded == null) {
-            Log.err("Cannot read from file " + configFile.toPath() + ".\n" +
-                    "Please use 2 files as input: %name%.jpg and %name%.properties \n" +
-                    "The DICOM output file will be created with default properties.\n" +
-                    "You may find example .properties file here: https://github.com/open-ortho/dcm4ceph/blob/master/dcm4ceph-sampledata/B1893F12.properties ");
+            Log.err(
+            "Cannot read from file " + configFile.toPath() + ".\n" +
+                "Please use 2 files as input: %name%.jpg and %name%.properties .\n" +
+                "The .properties file is mandatory.\n" +
+                "You may find example .properties file here: https://github.com/open-ortho/dcm4ceph/blob/master/dcm4ceph-sampledata/B1893F12.properties \n" +
+                "You may also find sensible defaults .properties file here: https://github.com/open-ortho/dcm4ceph/blob/master/dcm4ceph-core/src/main/resources/ceph_defaults.properties "
+            );
             // exit if we were unable to load properties
             System.exit(1);
             return;
