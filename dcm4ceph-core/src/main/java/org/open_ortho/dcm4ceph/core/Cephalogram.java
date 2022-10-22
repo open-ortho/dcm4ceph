@@ -107,12 +107,18 @@ public class Cephalogram extends DXImage {
         init();
 
         if (config == null) {
-            instanceProperties = FileUtils.loadProperties(FileUtils
-                    .getPropertiesFile(cephFile));
-        } else {
-            instanceProperties = FileUtils.loadProperties(config);
+            /* if no explicit .properties file is passed into constructor
+             * then use .properties file from directory
+             * (this is the common mode of operation for the program)
+             */
+            config = FileUtils.getPropertiesFile(cephFile);
         }
-
+        Properties configLoaded = FileUtils.loadProperties(config);
+        if (configLoaded == null) {
+            // do not override default properties if we were unable to read provided .properties file
+            return;
+        }
+        instanceProperties = configLoaded;
     }
 
     Cephalogram(DicomObject dcmobj) {
@@ -285,6 +291,7 @@ public class Cephalogram extends DXImage {
                                     + cephprops.getProperty("studyTime")));
         } catch (ParseException e) {
             e.printStackTrace();
+            Log.warn("using current datetime as studyDateTime");
             getGeneralStudyModule().setStudyDateTime(new Date());
         }
         // Set Series date and time to Study date and time.
@@ -321,10 +328,10 @@ public class Cephalogram extends DXImage {
 
         setMagnification(cephprops.getProperty("mag"));
 
-        if (cephprops.getProperty("cephalogramType").equals("PA")) {
+        if ("PA".equals(cephprops.getProperty("cephalogramType"))) {
             setPosteroAnterior();
         }
-        if (cephprops.getProperty("cephalogramType").equals("L")) {
+        if ("L".equals(cephprops.getProperty("cephalogramType"))) {
             setLeftLateral();
         }
     }
