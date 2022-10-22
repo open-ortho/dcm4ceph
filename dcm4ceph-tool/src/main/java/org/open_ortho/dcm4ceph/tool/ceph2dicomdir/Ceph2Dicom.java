@@ -27,6 +27,7 @@ package org.open_ortho.dcm4ceph.tool.ceph2dicomdir;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -35,6 +36,7 @@ import org.apache.commons.cli.*;
 
 import org.open_ortho.dcm4ceph.core.BBCephalogramSet;
 import org.open_ortho.dcm4ceph.core.Cephalogram;
+import org.open_ortho.dcm4ceph.util.Log;
 
 /**
  * @author afm
@@ -53,12 +55,10 @@ public class Ceph2Dicom {
 	}
 
 	/**
-	 * @param args
+	 * @param args cmd args
 	 */
 	public static void main(String[] args) {
-		// CommandLineParser parser = new DefaultParser();
 		CommandLineParser parser = new DefaultParser();
-
 		Option inputfile = Option.builder("i")
 				.longOpt("file")
 				.argName("file")
@@ -67,7 +67,6 @@ public class Ceph2Dicom {
 				.desc("Name of cephalogram x-ray image file.")
 				.build();
 		inputfile.setArgs(1);
-
 		Option fiducialfile = Option.builder("f")
 				.longOpt("fiducialfile")
 				.argName("file")
@@ -75,54 +74,61 @@ public class Ceph2Dicom {
 				.numberOfArgs(1)
 				.desc("Name of fiducials punched on the x-ray file.")
 				.build();
-
 		Option outputdir = Option.builder("o")
 				.longOpt("outputdir")
 				.argName("directory")
 				.hasArg()
 				.desc("directory where to save DICOM into. Defaults to this one.")
 				.build();
-
 		Options options = new Options();
 		options.addOption("B", "boltonset", false,
 				"create DICOMDIR of a Bolton Set with PA, Lateral, and Fiducial. Requires specifying --file twice: PA, Lateral and --fiducialfile.");
 		options.addOption(inputfile);
 		options.addOption(fiducialfile);
 
+		CommandLine line;
 		try {
-			CommandLine line = parser.parse(options, args);
+			line = parser.parse(options, args);
+		} catch (ParseException exp) {
+			exp.printStackTrace();
+			Log.err("Incorrect Arguments.");
+			HelpFormatter formatter = new HelpFormatter();
+			formatter.printHelp("ceph2dicom", options);
+			System.exit(1);
+			return;
+		}
+
+		try {
 			if (line.hasOption("boltonset")) {
-				System.out.println("Converting PA, Lateral and Fiducial Set to DICOMDIR.");
+				// boltonset mode of operation
+				Log.info("Converting PA, Lateral and Fiducial Set to DICOMDIR.");
 				File cephfile1 = new File(line.getOptionValues(inputfile)[0]);
 				File cephfile2 = new File(line.getOptionValues(inputfile)[1]);
 				File fidfile = new File(line.getOptionValue(inputfile));
 				BBCephalogramSet cephSet = new BBCephalogramSet(cephfile1, cephfile2,
 						fidfile);
-
 				cephSet.writeDicomdir(new File(cephfile1.getParent() + File.separator
 						+ "BBcephset"));
-
-			} else {
-				System.out.println("Converting single TIF file to DCM.");
-				String outputDirectory = null;
-				if (line.hasOption(outputdir))
-					outputDirectory = line.getOptionValue(outputdir);
-
-				Cephalogram ceph = new Cephalogram(new File(line.getOptionValue(inputfile)));
-				if (outputDirectory != null)
-					ceph.writeDCM(outputDirectory, null);
-				else
-					ceph.writeDCM();
-
+				return;
 			}
-
-			// printDicomElements(FileUtils.getDCMFile(cephfile));
-
-		} catch (ParseException exp) {
-			System.err.println("ERR: Incorrect Arguments.");
-			System.err.println(exp);
-			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("ceph2dicom", options);
+			// single file mode of operation
+			Log.info("Converting single TIF file to DCM.");
+			String outputDirectory = null;
+			if (line.hasOption(outputdir)) {
+				outputDirectory = line.getOptionValue(outputdir);
+			}
+			Cephalogram ceph = new Cephalogram(new File(line.getOptionValue(inputfile)));
+			if (outputDirectory != null) {
+				ceph.writeDCM(outputDirectory, null);
+				return;
+			}
+			ceph.writeDCM();
+			return;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+			Log.err("Could not find input file. Exiting.");
+			System.exit(1);
+			return;
 		}
 	}
 
