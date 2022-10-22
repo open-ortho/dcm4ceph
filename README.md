@@ -83,6 +83,10 @@ After build you may also find `./dcm4ceph-dist/dcm4ceph.jar` artifact packaged a
 
 Javadoc of the core library is hosted on [github pages](https://open-ortho.github.io/dcm4ceph/apidocs/)
 
+#### Build and update javadoc (non-automated)
 
-
-    
+1. Switch to release branch.
+2. Run `./mvnw clean package -Prelease`. This will build the javadoc and source jars for `dcm4ceph-core` module.
+3. Switch to `gh-pages` branch via `git switch gh-pages` or using IDE. Normally directory `./dcm4ceph-core/target` will not be erased during this switch.
+4. Copy `./dcm4ceph-core/target/apidocs` into `./docs/apidocs`
+5. Commit and push into `gh-pages` branch.  
