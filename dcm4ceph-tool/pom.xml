@@ -75,8 +75,11 @@
             </goals>
             <configuration>
               <target>
-                <copy file="./target/dcm4ceph.jar" todir="../dcm4ceph-dist">
-                </copy>
+                <copy file="./target/dcm4ceph.jar" todir="../dcm4ceph-dist"/>
+                <copydir src="../dcm4ceph-sampledata" dest="../dcm4ceph-dist/dcm4ceph-sampledata" />
+
+                <zip destfile="../dcm4ceph-dist.zip"
+                     basedir="../dcm4ceph-dist"/>
               </target>
             </configuration>
           </execution>
