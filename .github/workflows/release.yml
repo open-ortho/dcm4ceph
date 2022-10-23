@@ -15,5 +15,5 @@ jobs:
       #      distribution: 'adopt'
       - name: release
         run: ./mvnw clean package -Prelease
-        #with:
-        #  files:
+        with:
+          path: ./dcm4ceph-dist/dcm4ceph.jar
