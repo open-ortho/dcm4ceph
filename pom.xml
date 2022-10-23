@@ -1,109 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.antoniomagni.dcm4ceph</groupId>
-  <artifactId>dcm4ceph</artifactId>
-  <version>0.1.1</version>
+  <groupId>org.open_ortho.dcm4ceph</groupId>
+  <artifactId>dcm4ceph-parent</artifactId>
+  <version>1.0.0</version>
   <description>dcm4ceph is a set of utilities that aids the administration of cephalogram images in DICOM format.</description>
   <name>DICOM for Cephalograms</name>
   <packaging>pom</packaging>
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <modules>
-    <!--module>dcm4ceph-ui</module-->
-    <!--module>dcm4ceph-dist</module-->
     <module>dcm4ceph-core</module>
     <module>dcm4ceph-tool</module>
-    <!--module>dcm4ceph-site</module-->
   </modules>
+
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/assemble/src.xml</descriptor>
-            <!--descriptor>src/assemble/bin.xml</descriptor-->
-          </descriptors>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 
   <dependencies>
-    <dependency>
-      <groupId>dcm4che</groupId>
-      <artifactId>dcm4che-core</artifactId>
-      <version>2.0.29</version>
-    </dependency>
-    <dependency>
-      <groupId>dcm4che</groupId>
-      <artifactId>dcm4che-iod</artifactId>
-      <version>2.0.29</version>
-    </dependency>
+    <!-- Adding dependencies to the parent pom is rarely necessary -->
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>dcm4che</id>
-      <url>https://www.dcm4che.org/maven2/</url>
-    </repository>
-  </repositories>
-
-  <distributionManagement>
-    <repository>
-      <id>brillig.org</id>
-      <name>dcm4ceph Repository</name>
-      <url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph/m2repository</url>
-    </repository>
-
-    <site>
-      <id>brillig.org</id>
-      <name>dcm4ceph web site home</name>
-      <url>scp://dcm4ceph.antoniomagni.org/home/afm/public_html/antoniomagni.org/dcm4ceph</url>
-    </site>
-
-  </distributionManagement>
 
   <reporting>
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>dependencies</report>
-              <report>project-team</report>
-              <report>license</report>
-              <!--report>mailing-list</report>
-				<report>cim</report>
-				<report>issue-tracking</report>
-				<report>license</report>
-				<report>scm</report-->
-            </reports>
-          </reportSet>
-        </reportSets>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-      </plugin>
-
     </plugins>
   </reporting>
 
   <developers>
     <developer>
       <id>tinton</id>
-      <name>Antonio Magni</name>
-      <email>tinton@antoniomagni.org</email>
-      <url>http://www.antoniomagni.org</url>
-      <organization>Universidade de Bras��lia</organization>
-      <organizationUrl>http://www.unb.br</organizationUrl>
+      <name>Toni Magni</name>
+      <email>afm@case.edu</email>
+      <url>https://www.antoniomagni.com</url>
+      <organization>Case Western Reserve University Department of Orthodontics</organization>
+      <organizationUrl>https://orthodontics.case.edu</organizationUrl>
       <roles>
         <role>Developer</role>
         <role>Documentation</role>
@@ -115,16 +50,16 @@
 
   <licenses>
     <license>
-      <name>GNU Lesser General Public License</name>
-      <url>http://www.gnu.org/licenses/lgpl.html</url>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
       <distribution>manual</distribution>
       <comments />
     </license>
   </licenses>
 
   <organization>
-    <name>antoniomagni.org</name>
-    <url>http://www.antoniomagni.org</url>
+    <name>Case Western Reserve University Department of Orthodontics</name>
+    <url>https://orthodontics.case.edu</url>
   </organization>
 
   <scm>
