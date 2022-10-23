@@ -1,6 +1,7 @@
 package org.open_ortho.dcm4ceph.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
 
 /**
@@ -13,7 +14,7 @@ public class CephalogramTest {
     /**
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
 
         File cephfile1 = new File(args[0]);
         File cephfile2 = new File(args[1]);
