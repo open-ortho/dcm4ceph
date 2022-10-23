@@ -15,8 +15,9 @@ jobs:
       #      distribution: 'adopt'
       - name: release
         run: ./mvnw clean package -Prelease
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v3
+      - name: dist-files
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: dcm4ceph.jar
-          path: ./dcm4ceph-dist/dcm4ceph.jar
+          files: |
+            ./dcm4ceph-dist/dcm4ceph.jar
