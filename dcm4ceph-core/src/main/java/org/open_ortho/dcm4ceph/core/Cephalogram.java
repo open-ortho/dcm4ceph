@@ -110,9 +110,11 @@ public class Cephalogram extends DXImage {
 
         initDximage();
 
-        // use .properties file with same name as image, but swapped extension
-        // the .properties file existence is mandatory
+        // if explicit configFile .properties file is passed, use that first
         if (configFile == null) {
+            // if no configFile is passed, try to load default
+            // use .properties file with same name as image, but swapped extension
+            // the .properties file existence is mandatory
             configFile = FileUtils.getPropertiesFile(cephFile);
         }
         Properties configLoaded = FileUtils.loadProperties(configFile);
