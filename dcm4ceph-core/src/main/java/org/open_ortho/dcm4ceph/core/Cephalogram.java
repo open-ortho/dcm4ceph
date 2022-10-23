@@ -322,8 +322,7 @@ public class Cephalogram extends DXImage {
                     , Float.parseFloat(cephprops.getProperty("sod")) );
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            Log.warn("Could not parse sid and sod. Please set proper sid= and sod= as decimal." +
-                    "\nDistances are not set.");
+            Log.warn("Could not parse sid and sod. Please set proper sid= and sod= as decimal.");
         }
 
         setMagnification(cephprops.getProperty("mag"));

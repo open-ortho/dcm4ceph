@@ -112,7 +112,7 @@ public class Ceph2Dicom {
 				return;
 			}
 			// single file mode of operation
-			Log.info("Converting single TIF file to DCM.");
+			Log.info("Converting single file to DCM.");
 			String outputDirectory = null;
 			if (line.hasOption(outputdir)) {
 				outputDirectory = line.getOptionValue(outputdir);
