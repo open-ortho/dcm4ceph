@@ -97,6 +97,10 @@ public class Cephalogram extends DXImage {
             ImageTypeValue3.NULL };
 
     public Cephalogram(File cephFile) throws FileNotFoundException {
+        this(cephFile, null);
+    }
+
+    public Cephalogram(File cephFile, File configFile) throws FileNotFoundException {
         super(new BasicDicomObject());
 
         if (!cephFile.exists()) {
@@ -108,7 +112,9 @@ public class Cephalogram extends DXImage {
 
         // use .properties file with same name as image, but swapped extension
         // the .properties file existence is mandatory
-        File configFile = FileUtils.getPropertiesFile(cephFile);
+        if (configFile == null) {
+            configFile = FileUtils.getPropertiesFile(cephFile);
+        }
         Properties configLoaded = FileUtils.loadProperties(configFile);
         if (configLoaded == null) {
             Log.err(

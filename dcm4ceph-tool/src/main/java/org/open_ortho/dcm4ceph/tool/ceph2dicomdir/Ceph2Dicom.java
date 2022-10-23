@@ -117,7 +117,7 @@ public class Ceph2Dicom {
 			if (line.hasOption(outputdir)) {
 				outputDirectory = line.getOptionValue(outputdir);
 			}
-			Cephalogram ceph = new Cephalogram(new File(line.getOptionValue(inputfile)));
+			Cephalogram ceph = new Cephalogram(new File(line.getOptionValue(inputfile)), null);
 			if (outputDirectory != null) {
 				ceph.writeDCM(outputDirectory, null);
 				return;
