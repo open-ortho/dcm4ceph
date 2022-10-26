@@ -21,3 +21,4 @@ jobs:
         with:
           files: |
             ./dcm4ceph-dist.zip
+            ./dcm4ceph-core/target/*.jar
