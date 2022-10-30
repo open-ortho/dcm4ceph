@@ -36,6 +36,7 @@ import org.dcm4che2.iod.validation.ValidationResult;
 import org.dcm4che2.iod.value.Modality;
 import org.dcm4che2.iod.value.ShapeType;
 import org.dcm4che2.util.UIDUtils;
+import org.open_ortho.dcm4ceph.util.Log;
 
 /**
  * Reprsents a set of SB corner fiducials in DICOM format.
@@ -131,7 +132,7 @@ public class SBFiducialSet extends SpatialFiducials {
      * @param uids
      *            The SOP Instance UID of the referring image.
      * 
-     * @param properties
+     * @param fidprop
      *            The fiducial set information data.
      */
     public SBFiducialSet(String[] uids, Properties fidprop) {
@@ -176,8 +177,6 @@ public class SBFiducialSet extends SpatialFiducials {
      * Set attributes that are specific for all fiducial sets. Instance specific
      * values are set by {@link #prepare()}.
      * 
-     * @param dcmobj
-     * @return
      */
     public void init() {
         super.init();
@@ -226,7 +225,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the top left fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF1(FidPoint p) {
         this.f1 = p;
@@ -235,7 +234,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the top right fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF2(FidPoint p) {
         this.f2 = p;
@@ -244,7 +243,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the bottom right fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF3(FidPoint p) {
         this.f3 = p;
@@ -253,7 +252,7 @@ public class SBFiducialSet extends SpatialFiducials {
     /**
      * Set the bottom left fiducial point.
      * 
-     * @param p
+     * @param p point
      */
     public void setF4(FidPoint p) {
         this.f4 = p;
@@ -591,7 +590,7 @@ public class SBFiducialSet extends SpatialFiducials {
     }
 
     private Properties loadDefaults() {
-        return FileUtils.loadProperties(this.getClass(),
+        return FileUtils.loadProperties(
                 "fiducial_defaults.properties");
     }
 
@@ -613,9 +612,9 @@ public class SBFiducialSet extends SpatialFiducials {
      *         object was not written because of its invalidiy
      */
     public File writeDCM(String path, String filename) {
-        if (filename == null)
+        if (filename == null) {
             filename = FileUtils.getDCMFileName(this.propertiesFile);
-
+        }
         return writeDCM(new File(path + File.separator + filename));
     }
 
@@ -638,7 +637,7 @@ public class SBFiducialSet extends SpatialFiducials {
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             DicomOutputStream dos = new DicomOutputStream(bos);
 
-            System.out.println("Writing to file " + dcmFile.getCanonicalPath());
+            Log.info("Writing to file " + dcmFile.getCanonicalPath());
 
             dos.writeDicomFile(dcmobj);
             // dos.writeHeader(Tag.PixelData, VR.OB, -1);

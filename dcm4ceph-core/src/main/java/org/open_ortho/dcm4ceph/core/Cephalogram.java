@@ -10,23 +10,6 @@
 
 package org.open_ortho.dcm4ceph.core;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Properties;
-
-import javax.imageio.stream.FileImageInputStream;
-
-import org.open_ortho.dcm4ceph.util.DcmUtils;
-import org.open_ortho.dcm4ceph.util.FileUtils;
-import org.open_ortho.dcm4ceph.util.Log;
 import org.dcm4che2.data.BasicDicomObject;
 import org.dcm4che2.data.DicomObject;
 import org.dcm4che2.data.Tag;
@@ -56,6 +39,22 @@ import org.dcm4che2.iod.value.PresentationIntentType;
 import org.dcm4che2.iod.value.TableType;
 import org.dcm4che2.util.UIDUtils;
 import org.devlib.schmidt.imageinfo.ImageInfo;
+import org.open_ortho.dcm4ceph.util.DcmUtils;
+import org.open_ortho.dcm4ceph.util.FileUtils;
+import org.open_ortho.dcm4ceph.util.Log;
+
+import javax.imageio.stream.FileImageInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * This class represents a digital cephalogram.
@@ -64,20 +63,30 @@ import org.devlib.schmidt.imageinfo.ImageInfo;
  *
  */
 public class Cephalogram extends DXImage {
-    private final double mmPerInch = 25.4; // 25.4 mm to an inch.
+
+    /**
+     * Latin alphabet No. 1
+     */
+    private static final String DEFAULT_CHARSET = "ISO_IR 100";
+
+    private static final String transferSyntax = UID.JPEGBaseline1;
+
+    private static final double mmPerInch = 25.4; // 25.4 mm to an inch.
 
     private String patientOrientation;
 
-    private final int minimumAllowedDPI = 128;
+    private static final int minimumAllowedDPI = 128;
 
     // private int DPI = 300;
 
+    /**
+     * input file reference
+     */
     private File imageFile;
 
-    private final String charset = "ISO_IR 100";
-
-    private String transferSyntax = UID.JPEGBaseline1;
-
+    /**
+     * input properties
+     */
     private Properties instanceProperties;
 
     public static final String[] PRIMARYIMAGETYPE = { ImageTypeValue1.ORIGINAL,
@@ -87,23 +96,41 @@ public class Cephalogram extends DXImage {
             ImageTypeValue1.ORIGINAL, ImageTypeValue2.SECONDARY,
             ImageTypeValue3.NULL };
 
-    public Cephalogram(File cephFile) {
+    public Cephalogram(File cephFile) throws FileNotFoundException {
         this(cephFile, null);
     }
 
-    public Cephalogram(File cephFile, File config) {
+    public Cephalogram(File cephFile, File configFile) throws FileNotFoundException {
         super(new BasicDicomObject());
-        instanceProperties = new Properties();
+
+        if (!cephFile.exists()) {
+            throw new FileNotFoundException("input file not found");
+        }
         setImageFile(cephFile);
 
-        init();
+        initDximage();
 
-        if (config == null) {
-            instanceProperties = FileUtils.loadProperties(FileUtils
-                    .getPropertiesFile(cephFile));
-        } else
-            instanceProperties = FileUtils.loadProperties(config);
-
+        // if explicit configFile .properties file is passed, use that first
+        if (configFile == null) {
+            // if no configFile is passed, try to load default
+            // use .properties file with same name as image, but swapped extension
+            // the .properties file existence is mandatory
+            configFile = FileUtils.getPropertiesFile(cephFile);
+        }
+        Properties configLoaded = FileUtils.loadProperties(configFile);
+        if (configLoaded == null) {
+            Log.err(
+            "Cannot read from file " + configFile.toPath() + ".\n" +
+                "Please use 2 files as input: %name%.jpg and %name%.properties .\n" +
+                "The .properties file is mandatory.\n" +
+                "You may find example .properties file here: https://github.com/open-ortho/dcm4ceph/blob/master/dcm4ceph-sampledata/B1893F12.properties \n" +
+                "You may also find sensible defaults .properties file here: https://github.com/open-ortho/dcm4ceph/blob/master/dcm4ceph-core/src/main/resources/ceph_defaults.properties "
+            );
+            // exit if we were unable to load properties
+            System.exit(1);
+            return;
+        }
+        instanceProperties = configLoaded;
     }
 
     Cephalogram(DicomObject dcmobj) {
@@ -116,12 +143,8 @@ public class Cephalogram extends DXImage {
      * This method sets the various attributes to values which are independent
      * the instance of the class.
      */
-    public void init() {
+    public void initDximage() {
         super.init();
-
-        // Load defaults first.
-        instanceProperties = FileUtils.loadProperties(this.getClass(),
-                "ceph_defaults.properties");
 
         // Set SOP stuff.
         getSopCommonModule().setSOPClassUID(
@@ -130,8 +153,9 @@ public class Cephalogram extends DXImage {
 
         // Set the Series (DX and General) Module Attributes
         getDXSeriesModule().setModality(Modality.DX);
-        if (this.getSeriesUID() == null)
+        if (this.getSeriesUID() == null) {
             this.setSeriesUID(makeInstanceUID());
+        }
 
         // Set a default series date of now, which will be changed later.
         getDXSeriesModule().setSeriesDateTime(new Date());
@@ -162,7 +186,6 @@ public class Cephalogram extends DXImage {
         AnatomicRegionCode anatomicCode = (AnatomicRegionCode) setCode(
                 new AnatomicRegionCode(), "T-D1100", "Head, NOS", "SNM3");
         getDXAnatomyImageModule().setAnatomicRegionCode(anatomicCode);
-
     }
 
     /**
@@ -193,26 +216,20 @@ public class Cephalogram extends DXImage {
      * This method sets the various DICOM attributes that are specific to this
      * Cephalogram instance.
      *
-     * @see #setFromProperties(Properties)
+     * @see #setDcmobjTagsFromProperties(Properties)
      * @see #setImageAttributes(FileImageInputStream)
      *
      */
-    private void prepare() {
-        setFromProperties(instanceProperties);
-        try {
-            setImageAttributes(new FileImageInputStream(imageFile));
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+    private void prepareDcmobj() throws IOException {
+        setDcmobjTagsFromProperties(instanceProperties);
+        try (FileImageInputStream is = new FileImageInputStream(imageFile)) {
+            setImageAttributes(is);
         }
         DcmUtils.ensureUID(dcmobj, Tag.StudyInstanceUID);
         DcmUtils.ensureUID(dcmobj, Tag.SeriesInstanceUID);
         DcmUtils.ensureUID(dcmobj, Tag.SOPInstanceUID);
 
-        dcmobj.putString(Tag.SpecificCharacterSet, VR.CS, charset);
+        dcmobj.putString(Tag.SpecificCharacterSet, VR.CS, DEFAULT_CHARSET);
         dcmobj.initFileMetaInformation(transferSyntax);
     }
 
@@ -220,38 +237,47 @@ public class Cephalogram extends DXImage {
         super.validate(ctx, result);
         // BasicDicomObject testobj = new BasicDicomObject();
 
-        if (getDXImageModule().getBitsAllocated() < 16)
+        if (getDXImageModule().getBitsAllocated() < 16) {
             result.logInvalidValue(Tag.BitsAllocated, dcmobj);
-        if (getDXImageModule().getBitsStored() < 12)
+        }
+        if (getDXImageModule().getBitsStored() < 12) {
             result.logInvalidValue(Tag.BitsStored, dcmobj);
-        if (!validatePixelSpacing())
+        }
+        if (!validatePixelSpacing()) {
             result.logInvalidValue(Tag.PixelSpacing, dcmobj);
+        }
 
-        if (getDXImageModule().getRedPaletteColorLookupTableDescriptor() != null)
+        if (getDXImageModule().getRedPaletteColorLookupTableDescriptor() != null) {
             getDXImageModule().setRedPaletteColorLookupTableDescriptor(null);
-        if (getDXImageModule().getRedPaletteColorLookupTableData() != null)
+        }
+        if (getDXImageModule().getRedPaletteColorLookupTableData() != null) {
             getDXImageModule().setRedPaletteColorLookupTableData(null);
+        }
 
-        if (getDXImageModule().getGreenPaletteColorLookupTableDescriptor() != null)
+        if (getDXImageModule().getGreenPaletteColorLookupTableDescriptor() != null) {
             getDXImageModule().setGreenPaletteColorLookupTableDescriptor(null);
-        if (getDXImageModule().getGreenPaletteColorLookupTableData() != null)
+        }
+        if (getDXImageModule().getGreenPaletteColorLookupTableData() != null) {
             getDXImageModule().setGreenPaletteColorLookupTableData(null);
+        }
 
-        if (getDXImageModule().getBluePaletteColorLookupTableDescriptor() != null)
+        if (getDXImageModule().getBluePaletteColorLookupTableDescriptor() != null) {
             getDXImageModule().setBluePaletteColorLookupTableDescriptor(null);
-        if (getDXImageModule().getBluePaletteColorLookupTableData() != null)
+        }
+        if (getDXImageModule().getBluePaletteColorLookupTableData() != null) {
             getDXImageModule().setBluePaletteColorLookupTableData(null);
+        }
 
     }
 
-    public void setFromProperties(Properties cephprops) {
+    public void setDcmobjTagsFromProperties(Properties cephprops) {
         getPatientModule()
                 .setPatientName(cephprops.getProperty("patientName"));
         getPatientModule().setPatientID(cephprops.getProperty("patientID"));
         try {
             DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            getPatientModule().setPatientBirthDate(
-                    formatter.parse(cephprops.getProperty("patientDOB")));
+            Date PatientBirthDate = formatter.parse(cephprops.getProperty("patientDOB"));
+            getPatientModule().setPatientBirthDate(PatientBirthDate);
         } catch (ParseException e) {
             e.printStackTrace();
             Log.warn("Could not parse DOB correctly. Setting to null.");
@@ -266,6 +292,7 @@ public class Cephalogram extends DXImage {
                                     + cephprops.getProperty("studyTime")));
         } catch (ParseException e) {
             e.printStackTrace();
+            Log.warn("Could not parse Study Date Time correctly. Using current date time.");
             getGeneralStudyModule().setStudyDateTime(new Date());
         }
         // Set Series date and time to Study date and time.
@@ -297,40 +324,44 @@ public class Cephalogram extends DXImage {
         getDXSeriesModule().setSeriesNumber(
                 cephprops.getProperty("seriesNumber"));
 
-        setDistances(Float.parseFloat(cephprops.getProperty("sid")), Float
-                .parseFloat(cephprops.getProperty("sod")));
+        try {
+            setDistances(
+                      Float.parseFloat(cephprops.getProperty("sid"))
+                    , Float.parseFloat(cephprops.getProperty("sod")) );
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            Log.warn("Could not parse sid and sod. Please set proper sid= and sod= as decimal.");
+        }
 
         setMagnification(cephprops.getProperty("mag"));
 
-        if (cephprops.getProperty("cephalogramType").equals("PA"))
+        if ("PA".equals(cephprops.getProperty("cephalogramType"))) {
             setPosteroAnterior();
-        if (cephprops.getProperty("cephalogramType").equals("L"))
+        }
+        if ("L".equals(cephprops.getProperty("cephalogramType"))) {
             setLeftLateral();
+        }
     }
 
     private void setImageOrientation(String[] patientOrientation2) {
-        if (Arrays.equals(patientOrientation2, PatientOrientation.AF))
+        if (Arrays.equals(patientOrientation2, PatientOrientation.AF)) {
             dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
                     ImageOrientationPatient.AF);
-
-        else if (Arrays.equals(patientOrientation2, PatientOrientation.PF))
+        } else if (Arrays.equals(patientOrientation2, PatientOrientation.PF)) {
             dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
                     ImageOrientationPatient.PF);
-
-        else if (Arrays.equals(patientOrientation2, PatientOrientation.LF))
+        } else if (Arrays.equals(patientOrientation2, PatientOrientation.LF)) {
             dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
                     ImageOrientationPatient.LF);
-
-        else if (Arrays.equals(patientOrientation2, PatientOrientation.RF))
+        } else if (Arrays.equals(patientOrientation2, PatientOrientation.RF)) {
             dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
                     ImageOrientationPatient.RF);
-
-        else if (Arrays.equals(patientOrientation2, PatientOrientation.FP))
+        } else if (Arrays.equals(patientOrientation2, PatientOrientation.FP)) {
             dcmobj.putFloats(Tag.ImageOrientationPatient, VR.DS,
                     ImageOrientationPatient.FP);
-
-        else
+        } else {
             System.err.println("Cannot set image orientation correctly");
+        }
     }
 
     /**
@@ -351,7 +382,7 @@ public class Cephalogram extends DXImage {
      * This is the identifier that uniquely identifies the Study this
      * cephalogram is part of.
      *
-     * @param instanceNumber
+     * @param uid
      *                       The instanceNumber to set.
      */
     public void setStudyUID(String uid) {
@@ -370,10 +401,10 @@ public class Cephalogram extends DXImage {
     /**
      * Descritpion of the study.
      *
-     * @param instanceNumber
+     * @param description study description
      */
-    public void setStudyDescription(String Description) {
-        getGeneralStudyModule().setStudyDescription(Description);
+    public void setStudyDescription(String description) {
+        getGeneralStudyModule().setStudyDescription(description);
     }
 
     /**
@@ -406,7 +437,7 @@ public class Cephalogram extends DXImage {
      * <p>
      * This is the identifier that uniquely identifies this image.
      *
-     * @return
+     * @return SOPInstanceUID tag value
      */
     public String getUID() {
         return getSopCommonModule().getSOPInstanceUID();
@@ -462,8 +493,7 @@ public class Cephalogram extends DXImage {
     // }
     //
     /**
-     * @param imageFile
-     *                  The imageFile to set.
+     * @param file The imageFile to set.
      */
     public void setImageFile(File file) {
         this.imageFile = file;
@@ -479,19 +509,19 @@ public class Cephalogram extends DXImage {
     /**
      * Gets the pure file name of the DICOM representation of this Cephalogram.
      *
-     * @return
+     * @return image filename with output .dcm format extension
      */
     public String getDCMFileName() {
         return FileUtils.getDCMFileName(imageFile);
-
     }
 
     private boolean validatePixelSpacing() {
         boolean invalid = false;
         float[] pixelspacing = getDXDetectorModule().getPixelSpacing();
-        for (int i = 0; i < pixelspacing.length; i++) {
-            if (pixelspacing[i] > getMaximumPixelSpacing())
+        for (float v : pixelspacing) {
+            if (v > getMaximumPixelSpacing()) {
                 invalid = true;
+            }
         }
         return !invalid;
 
@@ -512,12 +542,13 @@ public class Cephalogram extends DXImage {
     /**
      * Set radiographic magnification.
      *
-     * @param mag
+     * @param mags
      *            Magnification in percentage.
      */
     public void setMagnification(String mags) {
-        if ((mags != null) && (!mags.equals("")))
+        if ((mags != null) && (!mags.equals(""))) {
             setMagnification(Float.parseFloat(mags));
+        }
     }
 
     private void setMagnification(float mag) {
@@ -546,8 +577,9 @@ public class Cephalogram extends DXImage {
      *            X-ray source to Patient distance in mm.
      */
     public void setDistance(String SID, String SOD) {
-        if (SID != null && SOD != null)
+        if (SID != null && SOD != null) {
             setDistances(Float.parseFloat(SID), Float.parseFloat(SOD));
+        }
     }
 
     /**
@@ -624,20 +656,20 @@ public class Cephalogram extends DXImage {
      * <p>
      * Type 3
      *
-     * @param annotations
+     * @param annotations burnedInAnnotation yes or no
      */
     public void setBurnedinAnnotations(boolean annotations) {
-        if (annotations)
+        if (annotations) {
             getDXImageModule().setBurnedInAnnotation("YES");
-        else
+        } else {
             getDXImageModule().setBurnedInAnnotation("NO");
-
+        }
     }
 
     /**
      * Reference other image of a lateral/pa ceph pair.
      *
-     * @param UID
+     * @param uid
      *            The instance UID of a DX IOD image for processing.
      */
     public void setReferencedImage(String uid) {
@@ -665,7 +697,7 @@ public class Cephalogram extends DXImage {
      * @see #validate(ValidationContext, ValidationResult)
      *
      */
-    public File writeDCM() {
+    public File writeDCM() throws IOException {
         return writeDCM(getDCMFile());
     }
 
@@ -682,9 +714,10 @@ public class Cephalogram extends DXImage {
      * @return The {@link File} this object was written to, or null if the
      *         object was not written because of its invalidiy
      */
-    public File writeDCM(String path, String filename) {
-        if (filename == null)
+    public File writeDCM(String path, String filename) throws IOException {
+        if (filename == null) {
             filename = getDCMFileName();
+        }
         return writeDCM(new File(path + File.separator + filename));
     }
 
@@ -703,12 +736,13 @@ public class Cephalogram extends DXImage {
      * @see #validate(ValidationContext, ValidationResult)
      *
      */
-    public File writeDCM(File dcmFile) {
-        if (dcmFile == null)
+    public File writeDCM(File dcmFile) throws IOException {
+        if (dcmFile == null) {
             return writeDCM();
+        }
 
         // First prepare the dicom object.
-        prepare();
+        prepareDcmobj();
 
         // Then verify it.
         ValidationResult results = new ValidationResult();
@@ -719,22 +753,19 @@ public class Cephalogram extends DXImage {
             System.err.println(results.getInvalidValues().toString());
         }
 
-        int bufferSize = 8192;
-
-        try {
-            FileOutputStream fos = new FileOutputStream(dcmFile);
+        try (FileOutputStream fos = new FileOutputStream(dcmFile);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
             DicomOutputStream dos = new DicomOutputStream(bos);
-
-            System.out.println("Writing to file " + dcmFile.getCanonicalPath());
-
             FileImageInputStream instream = new FileImageInputStream(imageFile);
+        ) {
+            Log.info("Writing to file " + dcmFile.getCanonicalPath());
 
             dos.writeDicomFile(dcmobj);
             dos.writeHeader(Tag.PixelData, VR.OB, -1);
             dos.writeHeader(Tag.Item, null, 0);
             int jpgLen = (int) instream.length();
             dos.writeHeader(Tag.Item, null, (jpgLen + 1) & ~1);
+            int bufferSize = 8192;
             byte[] b = new byte[bufferSize];
             int r;
             while ((r = instream.read(b)) > 0) {
@@ -744,14 +775,6 @@ public class Cephalogram extends DXImage {
                 dos.write(0);
             }
             dos.writeHeader(Tag.SequenceDelimitationItem, null, 0);
-            dos.close();
-            instream.close();
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
         return dcmFile;
     }
@@ -851,7 +874,6 @@ public class Cephalogram extends DXImage {
         getDXPositioningModule().setPositonerPrimaryAngle(prim);
         getDXPositioningModule().setPositonerSecondaryAngle(sec);
         getDXPositioningModule().setViewCode(viewcode);
-
     }
 
     private Code setCode(Code c, String val, String mean, String desig) {

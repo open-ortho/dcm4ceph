@@ -78,7 +78,7 @@ import java.util.Vector;
  * <p>
  * Last modification 2005-07-26.
  * <p>
- * <a name="history">History</a>:
+ * <a id="history">History</a>:
  * <ul>
  * <li><strong>2001-08-24</strong> Initial version.</li>
  * <li><strong>2001-10-13</strong> Added support for the file formats BMP and PCX.</li>
@@ -780,6 +780,7 @@ public class ImageInfo {
 	 * @throws IllegalArgumentException if index is smaller than 0 or larger than or equal
 	 * to the number of comments retrieved
 	 * @see #getNumberOfComments
+	 * @return comment
 	 */
 	public String getComment(int index) {
 		if (comments == null || index < 0 || index >= comments.size()) {

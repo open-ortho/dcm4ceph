@@ -15,8 +15,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.util.Properties;
 
 /**
@@ -38,16 +39,11 @@ public class FileUtils {
      * getFileNewExtension(file, &quot;dcm&quot;);
      * </pre>
      * 
-     * @param file
-     * @return
+     * @param file original file
+     * @return File reference with replaced extension
      */
     public static File getDCMFile(File file) {
-        try {
-            return getFileNewExtension(file, "dcm");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return getFileNewExtension(file, "dcm");
     }
 
     /**
@@ -60,16 +56,11 @@ public class FileUtils {
      * getFileNewExtension(file, &quot;dcm&quot;).getName();
      * </pre>
      * 
-     * @param file
-     * @return
+     * @param file original file
+     * @return filename with replaced extension to .dcm
      */
     public static String getDCMFileName(File file) {
-        try {
-            return getFileNewExtension(file, "dcm").getName();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return getFileNewExtension(file, "dcm").getName();
     }
 
     /**
@@ -83,16 +74,11 @@ public class FileUtils {
      * </pre>
      * 
      * 
-     * @param file
-     * @return
+     * @param file original file
+     * @return same file name, but replaced extension
      */
     public static File getPropertiesFile(File file) {
-        try {
-            return FileUtils.getFileNewExtension(file, "properties");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return FileUtils.getFileNewExtension(file, "properties");
     }
 
     /**
@@ -101,20 +87,14 @@ public class FileUtils {
      * This method returns a new {@link File} object, similar to the passed
      * argument, but with the extension replaced with ext.
      * 
-     * @param file
-     * @param ext
-     * @return
-     * @throws FileNotFoundException
+     * @param file original file
+     * @param ext new extension
+     * @return File reference with replaced extension
      */
-    public static File getFileNewExtension(File file, String ext)
-            throws FileNotFoundException {
-        if (!file.canRead())
-            throw new FileNotFoundException(
-                    "Can't read input Cephalogram Image file: "
-                            + file.getAbsolutePath());
-
-        if (!ext.startsWith("."))
+    public static File getFileNewExtension(File file, String ext) {
+        if (!ext.startsWith(".")) {
             ext = "." + ext;
+        }
         String[] filename = file.getName().split("\\.");
 
         File newfile = new File(file.getParent() + File.separator + filename[0]
@@ -130,15 +110,12 @@ public class FileUtils {
      * passed {@link Class}, catches all that needs to be catched and logs the
      * event as info.
      * 
-     * @param c
-     *            The {@link Class} to grab the {@link ClassLoader} from.
-     * 
      * @param conffile
      *            The properties file you want to load.
      * 
-     * @return
+     * @return loaded Properties object
      */
-    public static Properties loadProperties(Class c, String conffile) {
+    public static Properties loadProperties(String conffile) {
         Log.info("Loading Properties file " + conffile);
 
         Properties p = new Properties();
@@ -164,27 +141,20 @@ public class FileUtils {
      * This metods blindly loads the file specifed as its argument, and logs the
      * event as info, and catches what needs to be catched.
      * 
-     * @param filename
+     * @param filename .properties file name
      * 
      * @return A new {@link Properties} object loaded from the passed file.
      */
     public static Properties loadProperties(File filename) {
         Log.info("Loading Properties file " + filename);
         Properties props = new Properties();
-
-        if (!filename.canRead()) {
-            Log.warn("Cannot read from file " + filename + ".");
-        } else {
-            try {
-                props.load(new FileInputStream(filename));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try (InputStream is = Files.newInputStream(filename.toPath())) {
+            props.load(is);
+            return props;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
-        return props;
-
     }
 
 }
