@@ -1,0 +1,19 @@
+name: Publish Release
+on:
+  push:
+    tags:
+      - 'v*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: release
+        run: ./mvnw clean package -Prelease
+      - name: dist-files
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ./dcm4ceph-dist.zip
+            ./dcm4ceph-core/target/*.jar

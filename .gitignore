@@ -4,7 +4,8 @@
 target/
 *maven*
 # dist is explicitly ignored
-dcm4ceph-dist
+dcm4ceph-dist*
+dcm4ceph-sampledata/*.dcm
 
 pom.xml.tag
 pom.xml.releaseBackup
