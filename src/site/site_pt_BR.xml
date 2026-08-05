@@ -3,7 +3,7 @@
   <bannerLeft>
     <name>dcm4ceph</name>
     <src>http://maven.apache.org/images/apache-maven-project.png</src>
-    <href>http://dcm4ceph.antoniomagni.org/</href>
+    <href>https://github.com/open-ortho/dcm4ceph/</href>
   </bannerLeft>
   <bannerRight>
     <src>http://maven.apache.org/images/maven-small.gif</src>

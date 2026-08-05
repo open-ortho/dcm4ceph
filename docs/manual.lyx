@@ -185,7 +185,7 @@ Class diagram
 \end_layout
 
 \begin_layout Standard
-The org.antoniomagni.dcm4ceph-core package consists of 2 core classes: Cephalogram
+The org.open_ortho.dcm4ceph-core package consists of 2 core classes: Cephalogram
  and FiducialPoint.
  The Cephalogram class provides an eays interface for all cephalogram requiremen
 ts (such as magnification, patient demographics and orientation), while
